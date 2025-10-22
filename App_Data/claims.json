@@ -15,7 +15,7 @@
     "HourlyRate": 200,
     "Notes": "this is a trial",
     "FileName": "Screenshot 1 (2).png",
-    "Status": "Verified"
+    "Status": "Rejected"
   },
   {
     "Id": "a3c2b365-90bf-4b6d-8698-b80d845df3dd",
@@ -43,5 +43,23 @@
     "Notes": "final final trial",
     "FileName": "Screenshot 2025-03-28 184351.png",
     "Status": "Pending"
+  },
+  {
+    "Id": "97e39f2f-5546-4e0c-9bc2-ef1bacbd0a5c",
+    "LecturerName": "Keona ",
+    "HoursWorked": 23,
+    "HourlyRate": 200,
+    "Notes": "this is my trial to test that onlu once the coordinator verifys the claim will it show on the managers log in page ",
+    "FileName": "Screenshot 3(13).png",
+    "Status": "Approved"
+  },
+  {
+    "Id": "fee737b5-b2cc-469c-86a2-37c8d50de28a",
+    "LecturerName": "Caleb",
+    "HoursWorked": 40,
+    "HourlyRate": 350,
+    "Notes": "i lecturered for 40 hours at the varsity college westville campus ",
+    "FileName": "Screenshot 2025-03-28 184351.png",
+    "Status": "Approved"
   }
 ]
