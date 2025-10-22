@@ -1,0 +1,47 @@
+[
+  {
+    "Id": "c977c6f6-1c59-4732-aa9d-5096ca452f72",
+    "LecturerName": "teah",
+    "HoursWorked": 50,
+    "HourlyRate": 200,
+    "Notes": "this is a trial",
+    "FileName": null,
+    "Status": "Verified"
+  },
+  {
+    "Id": "55094b4c-6ce7-43ef-ab19-752f7eff61fd",
+    "LecturerName": "teah",
+    "HoursWorked": 50,
+    "HourlyRate": 200,
+    "Notes": "this is a trial",
+    "FileName": "Screenshot 1 (2).png",
+    "Status": "Verified"
+  },
+  {
+    "Id": "a3c2b365-90bf-4b6d-8698-b80d845df3dd",
+    "LecturerName": "teah",
+    "HoursWorked": 50,
+    "HourlyRate": 200,
+    "Notes": "Trial 2",
+    "FileName": "INSY6112 ERD.jpg",
+    "Status": "Approved"
+  },
+  {
+    "Id": "2c1d80e6-7ceb-439b-9c6b-48c1150f3752",
+    "LecturerName": "teah",
+    "HoursWorked": 50,
+    "HourlyRate": 200,
+    "Notes": "final trial",
+    "FileName": "Screenshot 1 (2).png",
+    "Status": "Pending"
+  },
+  {
+    "Id": "ff6b2c8f-4ea3-4580-aa03-d7a867c986f2",
+    "LecturerName": "teah",
+    "HoursWorked": 50,
+    "HourlyRate": 200,
+    "Notes": "final final trial",
+    "FileName": "Screenshot 2025-03-28 184351.png",
+    "Status": "Pending"
+  }
+]

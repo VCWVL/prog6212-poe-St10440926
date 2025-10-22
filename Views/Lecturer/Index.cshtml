@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Lecturer Dashboard";
+}
+
+@await Html.PartialAsync("_BackToLogin")
+
+
+<h2>Welcome, Lecturer</h2>
+<p class="text-muted">Submit new claims or view your previous submissions below.</p>
+
+<div class="mt-4">
+    <a asp-action="Create" class="btn btn-success">Submit New Claim</a>
+    <a asp-action="ViewAll" class="btn btn-outline-primary ms-2">View My Claims</a>
+</div>
