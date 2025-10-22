@@ -37,6 +37,10 @@
                 <td>
                     <a asp-action="Verify" asp-route-id="@claim.Id" class="btn btn-success btn-sm">Verify</a>
                     <a asp-action="Reject" asp-route-id="@claim.Id" class="btn btn-danger btn-sm">Reject</a>
+                    <a asp-controller="Claims" asp-action="DownloadFile" asp-route-fileName="@claim.FileName" class="btn btn-primary btn-sm">
+                        Download
+                    </a>
+
                 </td>
             </tr>
         }

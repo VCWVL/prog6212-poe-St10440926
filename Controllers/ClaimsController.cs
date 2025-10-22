@@ -82,6 +82,23 @@ namespace st10440926_poeparttwo.Controllers
             return View(claims);
         }
 
+        // ---------------- NEW: File Download ----------------
+        [HttpGet]
+        public IActionResult DownloadFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return BadRequest("Invalid file name.");
+
+            string filePath = Path.Combine(_uploadRoot, "original", fileName);
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("File not found.");
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var contentType = "application/octet-stream";
+            return File(fileBytes, contentType, fileName);
+        }
+
         // ---------------- Encryption ----------------
         private byte[] EncryptFile(byte[] data, string key)
         {
@@ -114,4 +131,3 @@ namespace st10440926_poeparttwo.Controllers
         }
     }
 }
-
