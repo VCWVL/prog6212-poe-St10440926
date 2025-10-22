@@ -1,1 +1,44 @@
-﻿
+﻿@model List<st10440926_poeparttwo.Models.ClaimModel>
+@{
+    ViewData["Title"] = "Coordinator Dashboard";
+}
+
+@await Html.PartialAsync("_BackToLogin")
+
+<h2>Pending Claims – Coordinator</h2>
+
+@if (TempData["Message"] != null)
+{
+    <p class="text-success">@TempData["Message"]</p>
+}
+
+<table class="table table-bordered mt-3">
+    <thead class="table-success">
+        <tr>
+            <th>Lecturer</th>
+            <th>Hours</th>
+            <th>Rate (R)</th>
+            <th>Total (R)</th>
+            <th>Notes</th>
+            <th>File Uploaded</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.LecturerName</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate</td>
+                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>@claim.Notes</td>
+                <td>@claim.FileName</td>
+                <td>
+                    <a asp-action="Verify" asp-route-id="@claim.Id" class="btn btn-success btn-sm">Verify</a>
+                    <a asp-action="Reject" asp-route-id="@claim.Id" class="btn btn-danger btn-sm">Reject</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
