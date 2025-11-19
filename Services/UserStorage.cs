@@ -29,5 +29,30 @@ namespace st10440926_poeparttwo.Services
             users.Add(user);
             SaveUsers(users);
         }
+
+        // =====================================
+        // UPDATE USER (for username changes)
+        // =====================================
+        public static void UpdateUser(string oldUsername, string newUsername)
+        {
+            var list = LoadUsers();
+            var existing = list.FirstOrDefault(u => u.Username == oldUsername);
+
+            if (existing != null)
+            {
+                existing.Username = newUsername;
+                SaveUsers(list);
+            }
+        }
+
+        // =====================================
+        // DELETE USER
+        // =====================================
+        public static void DeleteUser(string username)
+        {
+            var list = LoadUsers();
+            list.RemoveAll(u => u.Username == username);
+            SaveUsers(list);
+        }
     }
 }

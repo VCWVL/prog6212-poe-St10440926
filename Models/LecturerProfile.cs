@@ -2,8 +2,9 @@
 {
     public class LecturerProfile
     {
-        public string Username { get; set; }   // same as login username
-        public string FullName { get; set; }   // HR assigned
-        public decimal HourlyRate { get; set; } // HR assigned
+        public string Username { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }   // <<--- NEW REQUIRED FIELD
+        public decimal HourlyRate { get; set; }
     }
 }

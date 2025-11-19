@@ -35,5 +35,34 @@ namespace st10440926_poeparttwo.Services
             return LoadLecturers()
                    .FirstOrDefault(x => x.Username == username);
         }
+
+        // ================================
+        // UPDATE LECTURER PROFILE
+        // ================================
+        public static void UpdateLecturer(string originalUsername, LecturerProfile updated)
+        {
+            var list = LoadLecturers();
+            var existing = list.FirstOrDefault(l => l.Username == originalUsername);
+
+            if (existing != null)
+            {
+                existing.Username = updated.Username;
+                existing.FullName = updated.FullName;
+                existing.Email = updated.Email;
+                existing.HourlyRate = updated.HourlyRate;
+
+                SaveLecturers(list);
+            }
+        }
+
+        // ================================
+        // DELETE LECTURER
+        // ================================
+        public static void DeleteLecturer(string username)
+        {
+            var list = LoadLecturers();
+            list.RemoveAll(l => l.Username == username);
+            SaveLecturers(list);
+        }
     }
 }

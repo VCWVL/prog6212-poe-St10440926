@@ -66,7 +66,51 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // SET HOURLY RATE  (GET)
+        // EDIT LECTURER (GET)
+        // =====================
+        [HttpGet]
+        public IActionResult EditLecturer(string username)
+        {
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
+
+            var lecturer = LecturerStorage.GetLecturer(username);
+            return View(lecturer);
+        }
+
+        // =====================
+        // EDIT LECTURER (POST)
+        // =====================
+        [HttpPost]
+        public IActionResult EditLecturer(string OriginalUsername, string Username, string FullName, string Email, decimal HourlyRate)
+        {
+            LecturerStorage.UpdateLecturer(OriginalUsername, new LecturerProfile
+            {
+                Username = Username,
+                FullName = FullName,
+                Email = Email,
+                HourlyRate = HourlyRate
+            });
+
+            // Update user login username
+            UserStorage.UpdateUser(OriginalUsername, Username);
+
+            return RedirectToAction("Index");
+        }
+
+        // =====================
+        // DELETE LECTURER
+        // =====================
+        public IActionResult DeleteLecturer(string username)
+        {
+            LecturerStorage.DeleteLecturer(username);
+            UserStorage.DeleteUser(username);
+
+            return RedirectToAction("Index");
+        }
+
+        // =====================
+        // SET HOURLY RATE (GET)
         // =====================
         [HttpGet]
         public IActionResult SetRate()
