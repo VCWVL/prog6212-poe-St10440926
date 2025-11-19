@@ -7,15 +7,21 @@
 
     <hr />
 
+    <!-- ========================= -->
     <!-- STANDARD HOURLY RATE -->
+    <!-- ========================= -->
     <h4>Standard Hourly Rate</h4>
     <p><strong>Current Rate:</strong> R @Model.StandardRate per hour</p>
+
     <a class="btn btn-warning mb-3" asp-action="SetRate">Update Hourly Rate</a>
 
     <hr />
 
-    <!-- LECTURER PROFILES -->
+    <!-- ========================= -->
+    <!-- LECTURER PROFILES TABLE -->
+    <!-- ========================= -->
     <h4>Lecturer Profiles</h4>
+
     <a class="btn btn-success mb-3" asp-action="CreateLecturer">Create New Lecturer</a>
 
     <table class="table table-bordered">
@@ -39,9 +45,7 @@
                     <td>
                         <a asp-action="EditLecturer"
                            asp-route-username="@l.Username"
-                           class="btn btn-sm btn-primary">
-                            Edit
-                        </a>
+                           class="btn btn-sm btn-primary">Edit</a>
 
                         <a asp-action="DeleteLecturer"
                            asp-route-username="@l.Username"
@@ -57,14 +61,19 @@
 
     <hr />
 
-    <!-- USER ACCOUNTS -->
-    <h4>System Users</h4>
+    <!-- ========================= -->
+    <!-- GENERAL USER ACCOUNTS -->
+    <!-- ========================= -->
+    <h4>General System Users</h4>
+
+    <a class="btn btn-primary mb-3" asp-action="CreateUser">Create General User</a>
 
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Username</th>
                 <th>Role</th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
@@ -73,6 +82,22 @@
                 <tr>
                     <td>@u.Username</td>
                     <td>@u.Role</td>
+
+                    <td>
+                        <a asp-action="EditUser"
+                           asp-route-username="@u.Username"
+                           class="btn btn-sm btn-primary">
+                            Edit
+                        </a>
+
+                        <a asp-action="DeleteUser"
+                           asp-route-username="@u.Username"
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Are you sure you want to delete this user?');">
+                            Delete
+                        </a>
+                    </td>
+
                 </tr>
             }
         </tbody>

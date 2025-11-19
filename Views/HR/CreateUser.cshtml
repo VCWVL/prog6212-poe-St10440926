@@ -1,0 +1,29 @@
+﻿@model st10440926_poeparttwo.Models.UserModel
+
+<h2>Create User</h2>
+
+<form asp-action="CreateUser" method="post" class="mt-4">
+
+    <input class="form-control mb-3" name="Username" placeholder="Username" required />
+
+    <input class="form-control mb-3" name="FullName" placeholder="Full Name" required />
+
+    <input class="form-control mb-3" name="Email" placeholder="Email Address" required />
+
+    <select class="form-select mb-3" name="Role" required>
+        <option value="">-- Select Role --</option>
+        <option value="Lecturer">Lecturer</option>
+        <option value="Coordinator">Coordinator</option>
+        <option value="Manager">Manager</option>
+    </select>
+
+    <input class="form-control mb-3" type="number" step="0.01" name="HourlyRate"
+           placeholder="Hourly Rate (Only for lecturers)" />
+
+    <input class="form-control mb-3" name="Password" placeholder="Password" required />
+
+    <button type="submit" class="btn btn-success">Create User</button>
+
+</form>
+
+@await Html.PartialAsync("_BackToLogin")

@@ -1,0 +1,77 @@
+﻿@model st10440926_poeparttwo.Models.UserModel
+
+<h2>Edit User</h2>
+
+<form asp-action="EditUser" method="post" class="mt-4">
+
+    <!-- Hidden field to track original username -->
+    <input type="hidden" name="OriginalUsername" value="@Model.Username" />
+
+    <!-- USERNAME -->
+    <div class="mb-3">
+        <label>Username</label>
+        <input class="form-control" name="Username" value="@Model.Username" required />
+    </div>
+
+    <!-- ROLE SELECTION -->
+    <div class="mb-3">
+        <label>Role</label>
+
+        <select class="form-select" name="Role" required>
+
+            @* LECTURER *@
+            @if (Model.Role == "Lecturer")
+            {
+                <option value="Lecturer" selected>Lecturer</option>
+            }
+            else
+            {
+                <option value="Lecturer">Lecturer</option>
+            }
+
+            @* COORDINATOR *@
+            @if (Model.Role == "Coordinator")
+            {
+                <option value="Coordinator" selected>Coordinator</option>
+            }
+            else
+            {
+                <option value="Coordinator">Coordinator</option>
+            }
+
+            @* MANAGER *@
+            @if (Model.Role == "Manager")
+            {
+                <option value="Manager" selected>Manager</option>
+            }
+            else
+            {
+                <option value="Manager">Manager</option>
+            }
+
+            @* HR *@
+            @if (Model.Role == "HR")
+            {
+                <option value="HR" selected>HR</option>
+            }
+            else
+            {
+                <option value="HR">HR</option>
+            }
+
+        </select>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="mb-3">
+        <label>Password (leave blank to keep current)</label>
+        <input class="form-control" name="Password" />
+    </div>
+
+    <!-- BUTTONS -->
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+
+</form>
+
+@await Html.PartialAsync("_BackToLogin")
