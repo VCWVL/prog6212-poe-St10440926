@@ -2,7 +2,8 @@
 {
     public class UserModel
     {
-        public string Role { get; set; }
-        public string Password { get; set; }
+        public string Username { get; set; }   // Required for login
+        public string Password { get; set; }   // Required for login
+        public string Role { get; set; }       // Lecturer, Coordinator, Manager, HR
     }
 }

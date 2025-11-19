@@ -1,0 +1,20 @@
+﻿@model st10440926_poeparttwo.Models.LecturerProfile
+
+<h2>Create Lecturer</h2>
+
+<form asp-action="CreateLecturer" method="post" class="mt-4">
+
+    <input class="form-control mb-3" name="Username" placeholder="Username" required />
+
+    <input class="form-control mb-3" name="FullName" placeholder="Full Name" required />
+
+    <input class="form-control mb-3" type="number" step="0.01"
+           name="HourlyRate" placeholder="Hourly Rate" required />
+
+    <input class="form-control mb-3" name="Password" placeholder="Password" required />
+
+    <button type="submit" class="btn btn-success">Save Lecturer</button>
+
+</form>
+
+@await Html.PartialAsync("_BackToLogin")

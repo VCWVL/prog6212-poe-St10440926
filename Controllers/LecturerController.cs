@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
+using st10440926_poeparttwo.Services;   // ⭐ REQUIRED to access LecturerStorage
 using System.Text.Json;
 using System.Security.Cryptography;
 using System.Text;
@@ -9,18 +10,52 @@ namespace st10440926_poeparttwo.Controllers
     public class LecturerController : Controller
     {
         private readonly string _jsonPath = Path.Combine("App_Data", "claims.json");
-        private readonly string _uploadRoot = "upload"; // Folder where files are stored
-        private readonly string _key = "POE2025_SECURE_KEY"; // encryption key
+        private readonly string _uploadRoot = "upload";
+        private readonly string _key = "POE2025_SECURE_KEY";
 
+        // ------------------------------------------------------
+        // LECTURER HOME PAGE (VIEW PENDING CLAIMS)
+        // ------------------------------------------------------
         public IActionResult Index()
         {
             var claims = LoadClaims();
             return View(claims.Where(c => c.Status != "Approved").ToList());
         }
 
+        // ------------------------------------------------------
+        // CREATE CLAIM (GET) — AUTO-FILL LECTURER INFO
+        // ------------------------------------------------------
         [HttpGet]
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            // 1. Get logged-in user's username from session
+            string username = HttpContext.Session.GetString("Username");
 
+            if (username == null)
+                return RedirectToAction("Login", "Role");
+
+            // 2. Load lecturer profile from LecturerStorage
+            var profile = LecturerStorage.GetLecturer(username);
+
+            if (profile == null)
+            {
+                TempData["Error"] = "Lecturer profile not found. Contact HR.";
+                return RedirectToAction("Index");
+            }
+
+            // 3. AUTO-FILL the claim model using the lecturer profile
+            var model = new ClaimModel
+            {
+                LecturerName = profile.FullName,     // Auto-filled
+                HourlyRate = (double)profile.HourlyRate // Auto-filled
+            };
+
+            return View(model);
+        }
+
+        // ------------------------------------------------------
+        // CREATE CLAIM (POST)
+        // ------------------------------------------------------
         [HttpPost]
         public IActionResult Create(ClaimModel model, IFormFile? file)
         {
@@ -29,20 +64,20 @@ namespace st10440926_poeparttwo.Controllers
 
             if (file != null)
             {
-                // Ensure folder exists
+                // Ensure folders exist
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "original"));
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "encrypted"));
 
                 string originalPath = Path.Combine(_uploadRoot, "original", file.FileName);
                 string encryptedPath = Path.Combine(_uploadRoot, "encrypted", file.FileName + ".enc");
 
-                // Save normal file
+                // Save original
                 using (var fs = new FileStream(originalPath, FileMode.Create))
                 {
                     file.CopyTo(fs);
                 }
 
-                // Encrypt and save encrypted version
+                // Encrypt file
                 var fileBytes = System.IO.File.ReadAllBytes(originalPath);
                 var encrypted = EncryptFile(fileBytes, _key);
                 System.IO.File.WriteAllBytes(encryptedPath, encrypted);
@@ -50,21 +85,23 @@ namespace st10440926_poeparttwo.Controllers
                 model.FileName = file.FileName;
             }
 
+            // Save claim to JSON
             var claims = LoadClaims();
             claims.Add(model);
             SaveClaims(claims);
 
-            TempData["Message"] = "Claim submitted successfully! File stored securely.";
+            TempData["Message"] = "Claim submitted successfully!";
             return RedirectToAction("ViewAll");
         }
 
+        // -------------------- VIEW ALL CLAIMS --------------------
         public IActionResult ViewAll()
         {
             var claims = LoadClaims();
             return View(claims);
         }
 
-        // ---------------- ENCRYPTION ----------------
+        // -------------------- ENCRYPTION --------------------
         private byte[] EncryptFile(byte[] data, string key)
         {
             using var aes = Aes.Create();
@@ -73,10 +110,11 @@ namespace st10440926_poeparttwo.Controllers
 
             using var encryptor = aes.CreateEncryptor();
             byte[] encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
+
             return aes.IV.Concat(encrypted).ToArray();
         }
 
-        // ---------------- JSON LOAD/SAVE ----------------
+        // -------------------- JSON LOAD/SAVE --------------------
         private List<ClaimModel> LoadClaims()
         {
             if (!Directory.Exists("App_Data"))
