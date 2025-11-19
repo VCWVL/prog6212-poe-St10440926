@@ -10,6 +10,11 @@
     <!-- FIX: Added the missing form tag -->
     <form asp-action="Login" method="post" class="mt-4">
 
+        <!-- USERNAME FIELD (NEW) -->
+        <input type="text" name="Username" placeholder="Username"
+               class="form-control w-50 mx-auto mb-3" required />
+
+
         <select name="Role" class="form-select w-50 mx-auto mb-3" required>
             <option value="">-- Select Role --</option>
             <option value="Lecturer">Lecturer</option>
