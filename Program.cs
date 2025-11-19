@@ -1,4 +1,9 @@
+using QuestPDF.Infrastructure;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// ? REQUIRED BY QUESTPDF — FREE COMMUNITY LICENSE
+QuestPDF.Settings.License = LicenseType.Community;
 
 // MVC + Session
 builder.Services.AddControllersWithViews();
@@ -16,6 +21,7 @@ app.MapControllerRoute(
 );
 
 app.Run();
+
 
 
 /*

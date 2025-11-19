@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
 using st10440926_poeparttwo.Services;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace st10440926_poeparttwo.Controllers
 {
@@ -64,7 +67,7 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // CREATE GENERAL USER (GET)
+        // CREATE GENERAL USER
         // =====================
         [HttpGet]
         public IActionResult CreateUser()
@@ -75,13 +78,9 @@ namespace st10440926_poeparttwo.Controllers
             return View();
         }
 
-        // =====================
-        // CREATE GENERAL USER (POST)
-        // =====================
         [HttpPost]
         public IActionResult CreateUser(string Username, string FullName, string Email, string Role, decimal? HourlyRate, string Password)
         {
-            // Add login credentials
             UserStorage.AddUser(new UserModel
             {
                 Username = Username,
@@ -89,7 +88,6 @@ namespace st10440926_poeparttwo.Controllers
                 Role = Role
             });
 
-            // If user is a lecturer, create lecturer profile also
             if (Role == "Lecturer")
             {
                 LecturerStorage.AddLecturer(new LecturerProfile
@@ -105,21 +103,15 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // EDIT LECTURER (GET)
+        // EDIT LECTURER
         // =====================
         [HttpGet]
         public IActionResult EditLecturer(string username)
         {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
-
             var lecturer = LecturerStorage.GetLecturer(username);
             return View(lecturer);
         }
 
-        // =====================
-        // EDIT LECTURER (POST)
-        // =====================
         [HttpPost]
         public IActionResult EditLecturer(string OriginalUsername, string Username, string FullName, string Email, decimal HourlyRate)
         {
@@ -131,15 +123,11 @@ namespace st10440926_poeparttwo.Controllers
                 HourlyRate = HourlyRate
             });
 
-            // Update login credentials
             UserStorage.UpdateUser(OriginalUsername, Username);
 
             return RedirectToAction("Index");
         }
 
-        // =====================
-        // DELETE LECTURER
-        // =====================
         public IActionResult DeleteLecturer(string username)
         {
             LecturerStorage.DeleteLecturer(username);
@@ -148,21 +136,15 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // EDIT GENERAL USER (GET)
+        // EDIT USER
         // =====================
         [HttpGet]
         public IActionResult EditUser(string username)
         {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
-
             var user = UserStorage.LoadUsers().FirstOrDefault(u => u.Username == username);
             return View(user);
         }
 
-        // =====================
-        // EDIT GENERAL USER (POST)
-        // =====================
         [HttpPost]
         public IActionResult EditUser(string OriginalUsername, string Username, string Role, string Password)
         {
@@ -184,46 +166,108 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // DELETE GENERAL USER
+        // DELETE USER
         // =====================
         public IActionResult DeleteUser(string username)
         {
-            // Prevent deleting the user currently logged in
             if (HttpContext.Session.GetString("Username") == username)
             {
                 TempData["Error"] = "You cannot delete the currently logged-in user.";
                 return RedirectToAction("Index");
             }
 
-            // Remove login user
             UserStorage.DeleteUser(username);
-
-            // If they were a lecturer, remove profile too
             LecturerStorage.DeleteLecturer(username);
 
             return RedirectToAction("Index");
         }
 
         // =====================
-        // SET HOURLY RATE (GET)
+        // SET RATE
         // =====================
         [HttpGet]
-        public IActionResult SetRate()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
+        public IActionResult SetRate() => View();
 
-            return View();
-        }
-
-        // =====================
-        // SET HOURLY RATE (POST)
-        // =====================
         [HttpPost]
         public IActionResult SetRate(decimal rate)
         {
             HourlyRateStorage.SaveRate(rate);
             return RedirectToAction("Index");
+        }
+
+        // ==========================================================
+        // ⭐⭐⭐ GENERATE LECTURER REPORT (PDF)
+        // ==========================================================
+        public IActionResult GenerateLecturerReport()
+        {
+            var lecturers = LecturerStorage.LoadLecturers();
+
+            byte[] pdf = Document.Create(container =>
+            {
+                container.Page(page =>
+                {
+                    page.Margin(30);
+
+                    page.Header()
+                        .Text("Contract Monthly Claim System")
+                        .FontSize(20)
+                        .Bold()
+                        .AlignCenter();
+
+                    page.Content().Table(table =>
+                    {
+                        table.ColumnsDefinition(columns =>
+                        {
+                            columns.RelativeColumn();
+                            columns.RelativeColumn();
+                            columns.RelativeColumn();
+                            columns.RelativeColumn();
+                        });
+
+                        table.Header(header =>
+                        {
+                            header.Cell().Text("Username").Bold();
+                            header.Cell().Text("Full Name").Bold();
+                            header.Cell().Text("Email").Bold();
+                            header.Cell().Text("Hourly Rate").Bold();
+                        });
+
+                        foreach (var l in lecturers)
+                        {
+                            table.Cell().Text(l.Username);
+                            table.Cell().Text(l.FullName);
+                            table.Cell().Text(l.Email);
+                            table.Cell().Text("R " + l.HourlyRate);
+                        }
+                    });
+
+                    page.Footer()
+                        .AlignCenter()
+                        .Text($"Generated on {DateTime.Now:yyyy-MM-dd HH:mm}");
+                });
+            }).GeneratePdf();
+
+            return File(pdf, "application/pdf", "LecturerReport.pdf");
+        }
+
+        // ==========================================================
+        // ⭐⭐⭐ GENERATE INVOICE FOR A SPECIFIC LECTURER
+        // ==========================================================
+        public IActionResult GenerateInvoice(string username)
+        {
+            var lecturer = LecturerStorage.GetLecturer(username);
+            if (lecturer == null)
+                return NotFound();
+
+            var claims = ClaimStorage.LoadClaims()
+                .Where(c => c.LecturerName == lecturer.FullName)
+                .ToList();
+
+            byte[] pdf = InvoiceGenerator.Generate(lecturer, claims);
+
+            string fileName = $"Invoice_{lecturer.FullName.Replace(" ", "_")}_{DateTime.Now:yyyy-MM-dd}.pdf";
+
+            return File(pdf, "application/pdf", fileName);
         }
     }
 }

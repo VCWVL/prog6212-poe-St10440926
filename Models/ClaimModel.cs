@@ -15,6 +15,9 @@ namespace st10440926_poeparttwo.Models
         [Range(100, 1000, ErrorMessage = "Enter hourly rate (100–1000).")]
         public double HourlyRate { get; set; }
 
+        // NEW FIELD (for invoices)
+        public DateTime DateSubmitted { get; set; } = DateTime.Now;
+
         public string? Notes { get; set; }
         public string? FileName { get; set; }
         public string Status { get; set; } = "Pending";

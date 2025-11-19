@@ -7,4 +7,8 @@
     <RootNamespace>st10440926_poeparttwo</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="QuestPDF" Version="2025.7.4" />
+  </ItemGroup>
+
 </Project>

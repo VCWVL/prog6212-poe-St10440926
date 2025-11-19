@@ -18,6 +18,19 @@
     <hr />
 
     <!-- ========================= -->
+    <!-- STEP 2 — GENERATE REPORT -->
+    <!-- ========================= -->
+    <h4>Reports</h4>
+
+    <a class="btn btn-outline-dark mb-4"
+       asp-action="GenerateLecturerReport"
+       target="_blank">
+        📄 Download Lecturer Report (PDF)
+    </a>
+
+    <hr />
+
+    <!-- ========================= -->
     <!-- LECTURER PROFILES TABLE -->
     <!-- ========================= -->
     <h4>Lecturer Profiles</h4>
@@ -86,9 +99,7 @@
                     <td>
                         <a asp-action="EditUser"
                            asp-route-username="@u.Username"
-                           class="btn btn-sm btn-primary">
-                            Edit
-                        </a>
+                           class="btn btn-sm btn-primary">Edit</a>
 
                         <a asp-action="DeleteUser"
                            asp-route-username="@u.Username"
@@ -97,7 +108,6 @@
                             Delete
                         </a>
                     </td>
-
                 </tr>
             }
         </tbody>

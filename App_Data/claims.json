@@ -4,6 +4,7 @@
     "LecturerName": "teah",
     "HoursWorked": 50,
     "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0309874+02:00",
     "Notes": "this is a trial",
     "FileName": null,
     "Status": "Verified"
@@ -13,6 +14,7 @@
     "LecturerName": "teah",
     "HoursWorked": 50,
     "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0310402+02:00",
     "Notes": "this is a trial",
     "FileName": "Screenshot 1 (2).png",
     "Status": "Rejected"
@@ -22,6 +24,7 @@
     "LecturerName": "teah",
     "HoursWorked": 50,
     "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0310541+02:00",
     "Notes": "Trial 2",
     "FileName": "INSY6112 ERD.jpg",
     "Status": "Approved"
@@ -31,6 +34,7 @@
     "LecturerName": "teah",
     "HoursWorked": 50,
     "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0310703+02:00",
     "Notes": "final trial",
     "FileName": "Screenshot 1 (2).png",
     "Status": "Pending"
@@ -40,6 +44,7 @@
     "LecturerName": "teah",
     "HoursWorked": 50,
     "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0310851+02:00",
     "Notes": "final final trial",
     "FileName": "Screenshot 2025-03-28 184351.png",
     "Status": "Pending"
@@ -49,6 +54,7 @@
     "LecturerName": "Keona ",
     "HoursWorked": 23,
     "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0310949+02:00",
     "Notes": "this is my trial to test that onlu once the coordinator verifys the claim will it show on the managers log in page ",
     "FileName": "Screenshot 3(13).png",
     "Status": "Approved"
@@ -58,8 +64,19 @@
     "LecturerName": "Caleb",
     "HoursWorked": 40,
     "HourlyRate": 350,
+    "DateSubmitted": "2025-11-20T01:43:04.0311122+02:00",
     "Notes": "i lecturered for 40 hours at the varsity college westville campus ",
     "FileName": "Screenshot 2025-03-28 184351.png",
     "Status": "Approved"
+  },
+  {
+    "Id": "66f4e052-8629-41cc-b880-04c95fe9106f",
+    "LecturerName": "Caleb Pillay",
+    "HoursWorked": 77,
+    "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T01:43:04.0223887+02:00",
+    "Notes": null,
+    "FileName": null,
+    "Status": "Pending"
   }
 ]
