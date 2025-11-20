@@ -1,14 +1,51 @@
-﻿@{
+﻿@model List<st10440926_poeparttwo.Models.ClaimModel>
+
+@{
     ViewData["Title"] = "Lecturer Dashboard";
 }
 
 @await Html.PartialAsync("_BackToLogin")
 
-
 <h2>Welcome, Lecturer</h2>
-<p class="text-muted">Submit new claims or view your previous submissions below.</p>
+<p class="text-muted">Submit new claims or review your current claim statuses.</p>
 
-<div class="mt-4">
+<div class="mt-4 mb-4">
     <a asp-action="Create" class="btn btn-success">Submit New Claim</a>
-    <a asp-action="ViewAll" class="btn btn-outline-primary ms-2">View My Claims</a>
+    <a asp-action="ViewAll" class="btn btn-outline-primary ms-2">View All My Claims</a>
 </div>
+
+<hr />
+
+<h4>Your Pending / In-Progress Claims</h4>
+
+@if (Model == null || !Model.Any())
+{
+    <p class="text-muted">You currently have no pending claims.</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Hours Worked</th>
+                <th>Hourly Rate (R)</th>
+                <th>Total Amount (R)</th>
+                <th>Date Submitted</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var claim in Model)
+            {
+                <tr>
+                    <td>@claim.HoursWorked</td>
+                    <td>@claim.HourlyRate</td>
+                    <td>@(claim.HoursWorked* claim.HourlyRate)</td>
+                    <td>@claim.DateSubmitted.ToString("yyyy-MM-dd")</td>
+                    <td>@claim.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

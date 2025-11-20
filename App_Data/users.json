@@ -1,7 +1,32 @@
 [
   {
-    "Username": "Caleb",
-    "Password": "777",
+    "Username": "pooven ",
+    "Password": "888",
+    "Role": "Manager"
+  },
+  {
+    "Username": "pooven ",
+    "Password": "88",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "vee",
+    "Password": "123",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "Dee",
+    "Password": "1234",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "Talz ",
+    "Password": "444",
+    "Role": "Coordinator"
+  },
+  {
+    "Username": "Talz ",
+    "Password": "444",
     "Role": "Lecturer"
   }
 ]

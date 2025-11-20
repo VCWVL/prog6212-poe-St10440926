@@ -1,0 +1,42 @@
+﻿@model List<st10440926_poeparttwo.Models.ClaimModel>
+
+<h2 class="fw-bold">Verified Claims</h2>
+<p class="text-muted">These claims have been verified and await approval.</p>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-info">
+        <tr>
+            <th>Lecturer</th>
+            <th>Hours</th>
+            <th>Rate</th>
+            <th>Total</th>
+            <th>Date</th>
+            <th>Notes</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.LecturerName</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate</td>
+                <td>@(claim.HoursWorked* claim.HourlyRate)</td>
+                <td>@claim.DateSubmitted.ToString("yyyy-MM-dd")</td>
+                <td>@claim.Notes</td>
+
+                <td>
+                    <a asp-controller="Manager" asp-action="ApproveClaim"
+                       asp-route-id="@claim.Id"
+                       class="btn btn-sm btn-success">
+                        Approve
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a asp-action="Index" class="btn btn-secondary">← Back</a>

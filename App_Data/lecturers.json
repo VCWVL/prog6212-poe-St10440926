@@ -1,8 +1,26 @@
 [
   {
-    "Username": "Caleb",
-    "FullName": "Caleb Pillay",
-    "Email": null,
+    "Username": "pooven ",
+    "FullName": "pooven andrew ",
+    "Email": "poovenandrew@gmail.com",
+    "HourlyRate": 55
+  },
+  {
+    "Username": "vee",
+    "FullName": "vee",
+    "Email": "vee@gmail.com",
+    "HourlyRate": 12
+  },
+  {
+    "Username": "Dee",
+    "FullName": "dion ",
+    "Email": "Dion@gmail.com",
+    "HourlyRate": 350
+  },
+  {
+    "Username": "Talz ",
+    "FullName": "talia Andrew",
+    "Email": "Talz@gmail.com",
     "HourlyRate": 200
   }
 ]

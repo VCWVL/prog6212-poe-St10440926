@@ -1,118 +1,129 @@
 ﻿@model st10440926_poeparttwo.Models.HRDashboardViewModel
 
-<div class="container mt-4">
-
-    <h2 class="fw-bold text-primary">HR Dashboard</h2>
-    <p class="text-muted">Manage users, lecturers, and hourly rates.</p>
-
-    <hr />
-
-    <!-- ========================= -->
-    <!-- STANDARD HOURLY RATE -->
-    <!-- ========================= -->
-    <h4>Standard Hourly Rate</h4>
-    <p><strong>Current Rate:</strong> R @Model.StandardRate per hour</p>
-
-    <a class="btn btn-warning mb-3" asp-action="SetRate">Update Hourly Rate</a>
-
-    <hr />
-
-    <!-- ========================= -->
-    <!-- STEP 2 — GENERATE REPORT -->
-    <!-- ========================= -->
-    <h4>Reports</h4>
-
-    <a class="btn btn-outline-dark mb-4"
-       asp-action="GenerateLecturerReport"
-       target="_blank">
-        📄 Download Lecturer Report (PDF)
-    </a>
-
-    <hr />
-
-    <!-- ========================= -->
-    <!-- LECTURER PROFILES TABLE -->
-    <!-- ========================= -->
-    <h4>Lecturer Profiles</h4>
-
-    <a class="btn btn-success mb-3" asp-action="CreateLecturer">Create New Lecturer</a>
-
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Full Name</th>
-                <th>Email</th>
-                <th>Hourly Rate</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var l in Model.LecturerProfiles)
-            {
-                <tr>
-                    <td>@l.Username</td>
-                    <td>@l.FullName</td>
-                    <td>@l.Email</td>
-                    <td>R @l.HourlyRate</td>
-                    <td>
-                        <a asp-action="EditLecturer"
-                           asp-route-username="@l.Username"
-                           class="btn btn-sm btn-primary">Edit</a>
-
-                        <a asp-action="DeleteLecturer"
-                           asp-route-username="@l.Username"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('Are you sure you want to delete this lecturer?');">
-                            Delete
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <hr />
-
-    <!-- ========================= -->
-    <!-- GENERAL USER ACCOUNTS -->
-    <!-- ========================= -->
-    <h4>General System Users</h4>
-
-    <a class="btn btn-primary mb-3" asp-action="CreateUser">Create General User</a>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Username</th>
-                <th>Role</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var u in Model.Users)
-            {
-                <tr>
-                    <td>@u.Username</td>
-                    <td>@u.Role</td>
-
-                    <td>
-                        <a asp-action="EditUser"
-                           asp-route-username="@u.Username"
-                           class="btn btn-sm btn-primary">Edit</a>
-
-                        <a asp-action="DeleteUser"
-                           asp-route-username="@u.Username"
-                           class="btn btn-sm btn-danger"
-                           onclick="return confirm('Are you sure you want to delete this user?');">
-                            Delete
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-</div>
+@{
+    ViewData["Title"] = "HR Dashboard";
+}
 
 @await Html.PartialAsync("_BackToLogin")
+
+<h2 class="fw-bold text-primary mb-2">HR Dashboard</h2>
+<p class="text-muted">Manage lecturers, hourly rates, and user accounts.</p>
+
+<hr />
+
+
+<!-- =============================== -->
+<!-- SECTION 2 — LECTURER PROFILES -->
+<!-- =============================== -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0">Lecturer Profiles</h5>
+    </div>
+
+    <div class="card-body">
+
+        @if (Model.Lecturers != null && Model.Lecturers.Any())
+        {
+            <table class="table table-striped table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Name</th>
+                        <th>Username</th>
+                        <th>Hourly Rate</th>
+                        <th>Report</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var lecturer in Model.Lecturers)
+                    {
+                        // All claims for this lecturer:
+                        var claimsForLecturer = Model.Claims
+                        .Where(c => c.LecturerUsername == lecturer.Username)
+                        .ToList();
+
+                        bool hasApprovedOrVerified = claimsForLecturer
+                        .Any(c => c.Status == "Approved" || c.Status == "Verified");
+
+                        bool noValidReport = claimsForLecturer.Count == 0 ||
+                        claimsForLecturer.All(c => c.Status == "Rejected");
+
+                        <tr>
+                            <td>@lecturer.FullName</td>
+                            <td>@lecturer.Username</td>
+                            <td>R @lecturer.HourlyRate</td>
+
+                            <td>
+                                @if (hasApprovedOrVerified)
+                                {
+                                    <a asp-action="GenerateApprovedReport"
+                                       asp-route-username="@lecturer.Username"
+                                       class="btn btn-sm btn-primary">
+                                        View Report
+                                    </a>
+
+                                }
+                                else if (noValidReport)
+                                {
+                                    <span class="badge bg-danger">No Report Available</span>
+                                }
+                            </td>
+
+                            <td>
+                                <a asp-action="EditLecturer" asp-route-username="@lecturer.Username"
+                                   class="btn btn-sm btn-info">Edit</a>
+
+                                <a asp-action="DeleteLecturer" asp-route-username="@lecturer.Username"
+                                   class="btn btn-sm btn-danger">Remove</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p class="text-muted">No lecturers found.</p>
+        }
+
+    </div>
+</div>
+
+<!-- =============================== -->
+<!-- SECTION 3 — ACCOUNT CREATION -->
+<!-- =============================== -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0">Create New User Account</h5>
+    </div>
+
+    <div class="card-body">
+        <p class="text-muted">
+            HR can create accounts for new Lecturers, Coordinators, or Managers.
+        </p>
+
+        <!-- ⭐ Correct button (no extra closing tag) -->
+        <a asp-action="CreateUser" class="btn btn-dark">Create New User</a>
+    </div>
+</div>
+
+
+<!-- =============================== -->
+<!-- SECTION 4 — CLAIMS OVERVIEW -->
+<!-- =============================== -->
+<div class="card mb-4 shadow-sm">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">Claims Overview</h5>
+    </div>
+
+    <div class="card-body">
+        <p class="text-muted">Monitor lecturer claims (HR view only).</p>
+
+        <div class="d-flex gap-2">
+            <a asp-action="PendingClaims" class="btn btn-outline-primary">Pending Claims</a>
+            <a asp-action="VerifiedClaims" class="btn btn-outline-info">Verified Claims</a>
+            <a asp-action="ApprovedClaims" class="btn btn-outline-success">Approved Claims</a>
+        </div>
+    </div>
+</div>

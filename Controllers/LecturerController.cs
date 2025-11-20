@@ -14,12 +14,23 @@ namespace st10440926_poeparttwo.Controllers
         private readonly string _key = "POE2025_SECURE_KEY";
 
         // ------------------------------------------------------
-        // LECTURER HOME PAGE (VIEW PENDING CLAIMS)
+        // LECTURER DASHBOARD — SHOW ONLY MY (NOT APPROVED) CLAIMS
         // ------------------------------------------------------
         public IActionResult Index()
         {
+            string username = HttpContext.Session.GetString("Username");
+
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Role");
+
             var claims = LoadClaims();
-            return View(claims.Where(c => c.Status != "Approved").ToList());
+
+            // ⭐ FILTER: Only logged-in lecturer + not approved
+            var myClaims = claims
+                .Where(c => c.LecturerUsername == username && c.Status != "Approved")
+                .ToList();
+
+            return View(myClaims);
         }
 
         // ------------------------------------------------------
@@ -28,13 +39,11 @@ namespace st10440926_poeparttwo.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            // 1. Get logged-in user's username from session
             string username = HttpContext.Session.GetString("Username");
 
-            if (username == null)
+            if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login", "Role");
 
-            // 2. Load lecturer profile from LecturerStorage
             var profile = LecturerStorage.GetLecturer(username);
 
             if (profile == null)
@@ -43,11 +52,11 @@ namespace st10440926_poeparttwo.Controllers
                 return RedirectToAction("Index");
             }
 
-            // 3. AUTO-FILL the claim model using the lecturer profile
             var model = new ClaimModel
             {
-                LecturerName = profile.FullName,     // Auto-filled
-                HourlyRate = (double)profile.HourlyRate // Auto-filled
+                LecturerName = profile.FullName,
+                HourlyRate = (double)profile.HourlyRate,
+                LecturerUsername = username  // ⭐ REQUIRED FIX
             };
 
             return View(model);
@@ -62,22 +71,23 @@ namespace st10440926_poeparttwo.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
+            // ⭐ Store logged-in lecturer on the claim
+            model.LecturerUsername = HttpContext.Session.GetString("Username");
+
+            // Handle file upload & encryption
             if (file != null)
             {
-                // Ensure folders exist
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "original"));
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "encrypted"));
 
                 string originalPath = Path.Combine(_uploadRoot, "original", file.FileName);
                 string encryptedPath = Path.Combine(_uploadRoot, "encrypted", file.FileName + ".enc");
 
-                // Save original
                 using (var fs = new FileStream(originalPath, FileMode.Create))
                 {
                     file.CopyTo(fs);
                 }
 
-                // Encrypt file
                 var fileBytes = System.IO.File.ReadAllBytes(originalPath);
                 var encrypted = EncryptFile(fileBytes, _key);
                 System.IO.File.WriteAllBytes(encryptedPath, encrypted);
@@ -85,7 +95,7 @@ namespace st10440926_poeparttwo.Controllers
                 model.FileName = file.FileName;
             }
 
-            // Save claim to JSON
+            // Save claim
             var claims = LoadClaims();
             claims.Add(model);
             SaveClaims(claims);
@@ -94,14 +104,29 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("ViewAll");
         }
 
-        // -------------------- VIEW ALL CLAIMS --------------------
+        // ------------------------------------------------------
+        // VIEW ALL — ONLY MY CLAIMS
+        // ------------------------------------------------------
         public IActionResult ViewAll()
         {
+            string username = HttpContext.Session.GetString("Username");
+
+            if (string.IsNullOrEmpty(username))
+                return RedirectToAction("Login", "Role");
+
             var claims = LoadClaims();
-            return View(claims);
+
+            // ⭐ FILTER: Only logged-in lecturer’s claims
+            var myClaims = claims
+                .Where(c => c.LecturerUsername == username)
+                .ToList();
+
+            return View(myClaims);
         }
 
-        // -------------------- ENCRYPTION --------------------
+        // ------------------------------------------------------
+        // ENCRYPTION
+        // ------------------------------------------------------
         private byte[] EncryptFile(byte[] data, string key)
         {
             using var aes = Aes.Create();
@@ -114,7 +139,9 @@ namespace st10440926_poeparttwo.Controllers
             return aes.IV.Concat(encrypted).ToArray();
         }
 
-        // -------------------- JSON LOAD/SAVE --------------------
+        // ------------------------------------------------------
+        // JSON LOAD / SAVE
+        // ------------------------------------------------------
         private List<ClaimModel> LoadClaims()
         {
             if (!Directory.Exists("App_Data"))

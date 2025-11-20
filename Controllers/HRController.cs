@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using QuestPDF.Fluent;
+using QuestPDF.Infrastructure;
 using st10440926_poeparttwo.Models;
 using st10440926_poeparttwo.Services;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 
 namespace st10440926_poeparttwo.Controllers
 {
@@ -17,22 +16,19 @@ namespace st10440926_poeparttwo.Controllers
             if (HttpContext.Session.GetString("UserRole") != "HR")
                 return RedirectToAction("Login", "Role");
 
-            var users = UserStorage.LoadUsers();
-            var lecturers = LecturerStorage.LoadLecturers();
-            var rate = HourlyRateStorage.LoadRate();
-
             var model = new HRDashboardViewModel
             {
-                Users = users,
-                LecturerProfiles = lecturers,
-                StandardRate = rate
+                Users = UserStorage.LoadUsers(),
+                Lecturers = LecturerStorage.LoadLecturers(),
+                Claims = ClaimStorage.LoadClaims(),
+                StandardRate = HourlyRateStorage.LoadRate()
             };
 
             return View(model);
         }
 
         // =====================
-        // CREATE LECTURER (GET)
+        // CREATE LECTURER
         // =====================
         [HttpGet]
         public IActionResult CreateLecturer()
@@ -43,9 +39,6 @@ namespace st10440926_poeparttwo.Controllers
             return View();
         }
 
-        // =====================
-        // CREATE LECTURER (POST)
-        // =====================
         [HttpPost]
         public IActionResult CreateLecturer(string Username, string FullName, decimal HourlyRate, string Password)
         {
@@ -88,6 +81,7 @@ namespace st10440926_poeparttwo.Controllers
                 Role = Role
             });
 
+            // If Lecturer → add profile
             if (Role == "Lecturer")
             {
                 LecturerStorage.AddLecturer(new LecturerProfile
@@ -108,8 +102,10 @@ namespace st10440926_poeparttwo.Controllers
         [HttpGet]
         public IActionResult EditLecturer(string username)
         {
-            var lecturer = LecturerStorage.GetLecturer(username);
-            return View(lecturer);
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
+
+            return View(LecturerStorage.GetLecturer(username));
         }
 
         [HttpPost]
@@ -128,6 +124,9 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
+        // =====================
+        // DELETE LECTURER
+        // =====================
         public IActionResult DeleteLecturer(string username)
         {
             LecturerStorage.DeleteLecturer(username);
@@ -141,8 +140,10 @@ namespace st10440926_poeparttwo.Controllers
         [HttpGet]
         public IActionResult EditUser(string username)
         {
-            var user = UserStorage.LoadUsers().FirstOrDefault(u => u.Username == username);
-            return View(user);
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
+
+            return View(UserStorage.LoadUsers().FirstOrDefault(u => u.Username == username));
         }
 
         [HttpPost]
@@ -183,10 +184,16 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // SET RATE
+        // SET STANDARD HOURLY RATE
         // =====================
         [HttpGet]
-        public IActionResult SetRate() => View();
+        public IActionResult SetRate()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
+
+            return View();
+        }
 
         [HttpPost]
         public IActionResult SetRate(decimal rate)
@@ -195,79 +202,78 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
-        // ==========================================================
-        // ⭐⭐⭐ GENERATE LECTURER REPORT (PDF)
-        // ==========================================================
-        public IActionResult GenerateLecturerReport()
+        // =====================
+        // HR: PENDING CLAIMS
+        // =====================
+        public IActionResult PendingClaims()
         {
-            var lecturers = LecturerStorage.LoadLecturers();
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
 
-            byte[] pdf = Document.Create(container =>
-            {
-                container.Page(page =>
-                {
-                    page.Margin(30);
+            var claims = ClaimStorage.LoadClaims()
+                .Where(c => c.Status == "Pending")
+                .ToList();
 
-                    page.Header()
-                        .Text("Contract Monthly Claim System")
-                        .FontSize(20)
-                        .Bold()
-                        .AlignCenter();
+            return View(claims);
+        }
 
-                    page.Content().Table(table =>
-                    {
-                        table.ColumnsDefinition(columns =>
-                        {
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                        });
+        // =====================
+        // HR: VERIFIED CLAIMS
+        // =====================
+        public IActionResult VerifiedClaims()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
 
-                        table.Header(header =>
-                        {
-                            header.Cell().Text("Username").Bold();
-                            header.Cell().Text("Full Name").Bold();
-                            header.Cell().Text("Email").Bold();
-                            header.Cell().Text("Hourly Rate").Bold();
-                        });
+            var claims = ClaimStorage.LoadClaims()
+                .Where(c => c.Status == "Verified")
+                .ToList();
 
-                        foreach (var l in lecturers)
-                        {
-                            table.Cell().Text(l.Username);
-                            table.Cell().Text(l.FullName);
-                            table.Cell().Text(l.Email);
-                            table.Cell().Text("R " + l.HourlyRate);
-                        }
-                    });
+            return View(claims);
+        }
 
-                    page.Footer()
-                        .AlignCenter()
-                        .Text($"Generated on {DateTime.Now:yyyy-MM-dd HH:mm}");
-                });
-            }).GeneratePdf();
+        // =====================
+        // HR: APPROVED CLAIMS
+        // =====================
+        public IActionResult ApprovedClaims()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
 
-            return File(pdf, "application/pdf", "LecturerReport.pdf");
+            var claims = ClaimStorage.LoadClaims()
+                .Where(c => c.Status == "Approved")
+                .ToList();
+
+            return View(claims);
         }
 
         // ==========================================================
-        // ⭐⭐⭐ GENERATE INVOICE FOR A SPECIFIC LECTURER
+        // ⭐ GENERATE REPORT FOR APPROVED CLAIMS OF A LECTURER
         // ==========================================================
-        public IActionResult GenerateInvoice(string username)
+        public IActionResult GenerateApprovedReport(string username)
         {
+            QuestPDF.Settings.License = LicenseType.Community;
+
+            // 1. Find the lecturer
             var lecturer = LecturerStorage.GetLecturer(username);
             if (lecturer == null)
-                return NotFound();
+                return NotFound("Lecturer not found.");
 
-            var claims = ClaimStorage.LoadClaims()
-                .Where(c => c.LecturerName == lecturer.FullName)
+            // 2. Get ALL approved claims for this lecturer
+            var approvedClaims = ClaimStorage.LoadClaims()
+                .Where(c => c.LecturerUsername == lecturer.Username && c.Status == "Approved")
                 .ToList();
 
-            byte[] pdf = InvoiceGenerator.Generate(lecturer, claims);
+            if (!approvedClaims.Any())
+                return NotFound("No approved claims found for this lecturer.");
 
-            string fileName = $"Invoice_{lecturer.FullName.Replace(" ", "_")}_{DateTime.Now:yyyy-MM-dd}.pdf";
+            // 3. Generate PDF (CORRECT ORDER: lecturer FIRST, list of claims SECOND)
+            var pdf = ReportGenerator.GenerateLecturerReport(lecturer, approvedClaims);
+
+            string fileName = $"ApprovedClaims_{lecturer.FullName.Replace(" ", "_")}_{DateTime.Now:yyyy-MM-dd}.pdf";
 
             return File(pdf, "application/pdf", fileName);
         }
+
     }
 }

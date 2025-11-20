@@ -1,0 +1,31 @@
+﻿@model List<st10440926_poeparttwo.Models.ClaimModel>
+
+<h2 class="mb-3 text-success fw-bold">Approved Claims</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Lecturer</th>
+            <th>Hours</th>
+            <th>Rate (R)</th>
+            <th>Total (R)</th>
+            <th>Date Submitted</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var claim in Model)
+        {
+            <tr>
+                <td>@claim.Id</td>
+                <td>@claim.LecturerUsername</td>
+                <td>@claim.HoursWorked</td>
+                <td>@claim.HourlyRate</td>
+                <td>@(claim.HoursWorked* claim.HourlyRate)</td>
+                <td>@claim.DateSubmitted.ToString("yyyy-MM-dd")</td>
+                <td><span class="badge bg-success">Approved</span></td>
+            </tr>
+        }
+    </tbody>
+</table>

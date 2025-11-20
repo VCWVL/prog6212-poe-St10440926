@@ -2,6 +2,7 @@
   {
     "Id": "c977c6f6-1c59-4732-aa9d-5096ca452f72",
     "LecturerName": "teah",
+    "LecturerUsername": null,
     "HoursWorked": 50,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0309874+02:00",
@@ -12,6 +13,7 @@
   {
     "Id": "55094b4c-6ce7-43ef-ab19-752f7eff61fd",
     "LecturerName": "teah",
+    "LecturerUsername": null,
     "HoursWorked": 50,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0310402+02:00",
@@ -22,6 +24,7 @@
   {
     "Id": "a3c2b365-90bf-4b6d-8698-b80d845df3dd",
     "LecturerName": "teah",
+    "LecturerUsername": null,
     "HoursWorked": 50,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0310541+02:00",
@@ -32,6 +35,7 @@
   {
     "Id": "2c1d80e6-7ceb-439b-9c6b-48c1150f3752",
     "LecturerName": "teah",
+    "LecturerUsername": null,
     "HoursWorked": 50,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0310703+02:00",
@@ -42,6 +46,7 @@
   {
     "Id": "ff6b2c8f-4ea3-4580-aa03-d7a867c986f2",
     "LecturerName": "teah",
+    "LecturerUsername": null,
     "HoursWorked": 50,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0310851+02:00",
@@ -52,6 +57,7 @@
   {
     "Id": "97e39f2f-5546-4e0c-9bc2-ef1bacbd0a5c",
     "LecturerName": "Keona ",
+    "LecturerUsername": null,
     "HoursWorked": 23,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0310949+02:00",
@@ -62,6 +68,7 @@
   {
     "Id": "fee737b5-b2cc-469c-86a2-37c8d50de28a",
     "LecturerName": "Caleb",
+    "LecturerUsername": null,
     "HoursWorked": 40,
     "HourlyRate": 350,
     "DateSubmitted": "2025-11-20T01:43:04.0311122+02:00",
@@ -72,11 +79,45 @@
   {
     "Id": "66f4e052-8629-41cc-b880-04c95fe9106f",
     "LecturerName": "Caleb Pillay",
+    "LecturerUsername": null,
     "HoursWorked": 77,
     "HourlyRate": 200,
     "DateSubmitted": "2025-11-20T01:43:04.0223887+02:00",
     "Notes": null,
     "FileName": null,
     "Status": "Pending"
+  },
+  {
+    "Id": "012068ef-6f59-4da5-895a-fcf00aaf35cf",
+    "LecturerName": "Caleb Pillay",
+    "LecturerUsername": null,
+    "HoursWorked": 150,
+    "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T17:57:31.9708945+02:00",
+    "Notes": null,
+    "FileName": "city skyline.jpeg",
+    "Status": "Pending"
+  },
+  {
+    "Id": "dc9e486d-a616-4bc1-a561-725a1474ab27",
+    "LecturerName": "Caleb Pillay",
+    "LecturerUsername": "Caleb",
+    "HoursWorked": 77,
+    "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T18:37:01.4184242+02:00",
+    "Notes": null,
+    "FileName": "Screenshot 1 (2).png",
+    "Status": "Pending"
+  },
+  {
+    "Id": "892274d7-86b1-4033-b948-69c90a85ec9e",
+    "LecturerName": "dion ",
+    "LecturerUsername": "Dee",
+    "HoursWorked": 85,
+    "HourlyRate": 350,
+    "DateSubmitted": "2025-11-20T19:18:57.4144565+02:00",
+    "Notes": null,
+    "FileName": "city skyline.jpeg",
+    "Status": "Approved"
   }
 ]

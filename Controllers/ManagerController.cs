@@ -10,30 +10,51 @@ namespace st10440926_poeparttwo.Controllers
 
         public IActionResult Index()
         {
-            var claims = LoadClaims().Where(c => c.Status == "Verified").ToList();
+            // Show only claims ready for manager action
+            var claims = LoadClaims()
+                .Where(c => c.Status == "Verified")
+                .ToList();
+
             return View(claims);
         }
 
+        // =====================
+        // APPROVE CLAIM
+        // =====================
         public IActionResult Approve(string id)
         {
             var claims = LoadClaims();
             var claim = claims.FirstOrDefault(c => c.Id == id);
+
             if (claim != null)
+            {
                 claim.Status = "Approved";
+            }
+
             SaveClaims(claims);
             return RedirectToAction("Index");
         }
 
+        // =====================
+        // REJECT CLAIM
+        // =====================
         public IActionResult Reject(string id)
         {
             var claims = LoadClaims();
             var claim = claims.FirstOrDefault(c => c.Id == id);
+
             if (claim != null)
+            {
                 claim.Status = "Rejected";
+            }
+
             SaveClaims(claims);
             return RedirectToAction("Index");
         }
 
+        // =====================
+        // LOAD CLAIMS FROM JSON
+        // =====================
         private List<ClaimModel> LoadClaims()
         {
             if (!System.IO.File.Exists(_jsonPath))
@@ -43,6 +64,9 @@ namespace st10440926_poeparttwo.Controllers
             return JsonSerializer.Deserialize<List<ClaimModel>>(json) ?? new List<ClaimModel>();
         }
 
+        // =====================
+        // SAVE CLAIMS TO JSON
+        // =====================
         private void SaveClaims(List<ClaimModel> claims)
         {
             string json = JsonSerializer.Serialize(claims, new JsonSerializerOptions { WriteIndented = true });
@@ -50,4 +74,3 @@ namespace st10440926_poeparttwo.Controllers
         }
     }
 }
-
