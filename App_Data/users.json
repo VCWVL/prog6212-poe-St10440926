@@ -17,16 +17,6 @@
   {
     "Username": "Dee",
     "Password": "1234",
-    "Role": "Lecturer"
-  },
-  {
-    "Username": "Talz ",
-    "Password": "444",
-    "Role": "Coordinator"
-  },
-  {
-    "Username": "Talz ",
-    "Password": "444",
-    "Role": "Lecturer"
+    "Role": "Manager"
   }
 ]

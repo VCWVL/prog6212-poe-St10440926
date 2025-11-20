@@ -81,7 +81,6 @@ namespace st10440926_poeparttwo.Controllers
                 Role = Role
             });
 
-            // If Lecturer → add profile
             if (Role == "Lecturer")
             {
                 LecturerStorage.AddLecturer(new LecturerProfile
@@ -254,12 +253,10 @@ namespace st10440926_poeparttwo.Controllers
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
-            // 1. Find the lecturer
             var lecturer = LecturerStorage.GetLecturer(username);
             if (lecturer == null)
                 return NotFound("Lecturer not found.");
 
-            // 2. Get ALL approved claims for this lecturer
             var approvedClaims = ClaimStorage.LoadClaims()
                 .Where(c => c.LecturerUsername == lecturer.Username && c.Status == "Approved")
                 .ToList();
@@ -267,7 +264,6 @@ namespace st10440926_poeparttwo.Controllers
             if (!approvedClaims.Any())
                 return NotFound("No approved claims found for this lecturer.");
 
-            // 3. Generate PDF (CORRECT ORDER: lecturer FIRST, list of claims SECOND)
             var pdf = ReportGenerator.GenerateLecturerReport(lecturer, approvedClaims);
 
             string fileName = $"ApprovedClaims_{lecturer.FullName.Replace(" ", "_")}_{DateTime.Now:yyyy-MM-dd}.pdf";
@@ -275,5 +271,16 @@ namespace st10440926_poeparttwo.Controllers
             return File(pdf, "application/pdf", fileName);
         }
 
+        // =====================
+        // ⭐ MANAGE ALL USERS
+        // =====================
+        public IActionResult ManageUsers()
+        {
+            if (HttpContext.Session.GetString("UserRole") != "HR")
+                return RedirectToAction("Login", "Role");
+
+            var users = UserStorage.LoadUsers();
+            return View(users);
+        }
     }
 }
