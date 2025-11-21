@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
 using st10440926_poeparttwo.Services;
-using st10440926_poeparttwo.Data;      // ⭐ Added
+using st10440926_poeparttwo.Data;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,7 +9,7 @@ namespace st10440926_poeparttwo.Controllers
 {
     public class LecturerController : Controller
     {
-        private readonly ApplicationDbContext _db;  // ⭐ SQL Database
+        private readonly ApplicationDbContext _db;
         private readonly string _uploadRoot = "upload";
         private readonly string _key = "POE2025_SECURE_KEY";
 
@@ -28,7 +28,6 @@ namespace st10440926_poeparttwo.Controllers
             if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login", "Role");
 
-            // ⭐ SQL QUERY
             var myClaims = _db.Claims
                 .Where(c => c.LecturerUsername == username && c.Status != "Approved")
                 .ToList();
@@ -37,7 +36,7 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // ------------------------------------------------------
-        // CREATE CLAIM (GET) — AUTO-FILL LECTURER INFO
+        // CREATE CLAIM (GET)
         // ------------------------------------------------------
         [HttpGet]
         public IActionResult Create()
@@ -66,7 +65,7 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // ------------------------------------------------------
-        // CREATE CLAIM (POST)
+        // CREATE CLAIM (POST) — includes auto-approval logic
         // ------------------------------------------------------
         [HttpPost]
         public IActionResult Create(ClaimModel model, IFormFile? file)
@@ -76,7 +75,7 @@ namespace st10440926_poeparttwo.Controllers
 
             model.LecturerUsername = HttpContext.Session.GetString("Username");
 
-            // ⭐ File Upload + Encryption (unchanged)
+            // Upload + encrypt file
             if (file != null)
             {
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "original"));
@@ -97,7 +96,19 @@ namespace st10440926_poeparttwo.Controllers
                 model.FileName = file.FileName;
             }
 
-            // ⭐ SQL SAVE INSTEAD OF JSON
+            // ============================================
+            // ⭐ AUTO-APPROVE LOGIC FOR LECTURERS
+            // ============================================
+            if (model.HoursWorked >= 1 && model.HoursWorked <= 150)
+            {
+                model.Status = "Approved";
+            }
+            else
+            {
+                model.Status = "Pending";  // goes to coordinator → manager
+            }
+
+            // SAVE TO SQL
             _db.Claims.Add(model);
             _db.SaveChanges();
 
@@ -115,7 +126,6 @@ namespace st10440926_poeparttwo.Controllers
             if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login", "Role");
 
-            // ⭐ SQL QUERY
             var myClaims = _db.Claims
                 .Where(c => c.LecturerUsername == username)
                 .ToList();
@@ -124,7 +134,7 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // ------------------------------------------------------
-        // ENCRYPTION (UNCHANGED)
+        // ENCRYPTION
         // ------------------------------------------------------
         private byte[] EncryptFile(byte[] data, string key)
         {

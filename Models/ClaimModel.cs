@@ -28,5 +28,8 @@ namespace st10440926_poeparttwo.Models
         public string? FileName { get; set; }
 
         public string Status { get; set; } = "Pending";
+
+       
+
     }
 }
