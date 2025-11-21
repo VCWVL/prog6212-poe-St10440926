@@ -62,7 +62,7 @@ namespace st10440926_poeparttwo.Controllers
                 return View(model);
             }
 
-            // Leave this controller unchanged — lecturers save via LecturerController
+            // lecturers save via LecturerController
             _db.Claims.Add(model);
             _db.SaveChanges();
 

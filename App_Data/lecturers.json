@@ -5,5 +5,12 @@
     "Email": "es@gmail.com",
     "HourlyRate": 250,
     "User": null
+  },
+  {
+    "Username": "pooven",
+    "FullName": "pooven andrew",
+    "Email": "pooven@gmail.com",
+    "HourlyRate": 500,
+    "User": null
   }
 ]

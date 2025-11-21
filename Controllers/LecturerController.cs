@@ -18,9 +18,8 @@ namespace st10440926_poeparttwo.Controllers
             _db = db;
         }
 
-        // ------------------------------------------------------
-        // LECTURER DASHBOARD — SHOW ONLY MY (NOT APPROVED) CLAIMS
-        // ------------------------------------------------------
+        // LECTURER DASHBOARD 
+  
         public IActionResult Index()
         {
             string username = HttpContext.Session.GetString("Username");
@@ -35,9 +34,9 @@ namespace st10440926_poeparttwo.Controllers
             return View(myClaims);
         }
 
-        // ------------------------------------------------------
+       
         // CREATE CLAIM (GET)
-        // ------------------------------------------------------
+       
         [HttpGet]
         public IActionResult Create()
         {
@@ -64,9 +63,9 @@ namespace st10440926_poeparttwo.Controllers
             return View(model);
         }
 
-        // ------------------------------------------------------
-        // CREATE CLAIM (POST) — includes auto-approval logic
-        // ------------------------------------------------------
+        
+        // CREATE CLAIM (POST) 
+      
         [HttpPost]
         public IActionResult Create(ClaimModel model, IFormFile? file)
         {
@@ -75,7 +74,7 @@ namespace st10440926_poeparttwo.Controllers
 
             model.LecturerUsername = HttpContext.Session.GetString("Username");
 
-            // Upload + encrypt file
+            // Upload , encrypt file
             if (file != null)
             {
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "original"));
@@ -96,16 +95,16 @@ namespace st10440926_poeparttwo.Controllers
                 model.FileName = file.FileName;
             }
 
-            // ============================================
-            // ⭐ AUTO-APPROVE LOGIC FOR LECTURERS
-            // ============================================
+            
+            //  AUTO-APPROVE LOGIC FOR LECTURERS
+        
             if (model.HoursWorked >= 1 && model.HoursWorked <= 150)
             {
                 model.Status = "Approved";
             }
             else
             {
-                model.Status = "Pending";  // goes to coordinator → manager
+                model.Status = "Pending";  
             }
 
             // SAVE TO SQL
@@ -116,9 +115,9 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("ViewAll");
         }
 
-        // ------------------------------------------------------
+        
         // VIEW ALL — ONLY MY CLAIMS
-        // ------------------------------------------------------
+        
         public IActionResult ViewAll()
         {
             string username = HttpContext.Session.GetString("Username");
@@ -133,9 +132,9 @@ namespace st10440926_poeparttwo.Controllers
             return View(myClaims);
         }
 
-        // ------------------------------------------------------
+        
         // ENCRYPTION
-        // ------------------------------------------------------
+       
         private byte[] EncryptFile(byte[] data, string key)
         {
             using var aes = Aes.Create();

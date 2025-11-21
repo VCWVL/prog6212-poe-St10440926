@@ -5,9 +5,9 @@ namespace st10440926_poeparttwo.Models
 {
     public class HourlyRateSetting
     {
-        [Key]   // ⭐ Primary key
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]  // ⭐ Prevent auto-increment
-        public int Id { get; set; } = 1;   // Always 1 – only one row
+        [Key]   
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]  
+        public int Id { get; set; } = 1;   
 
         [Column(TypeName = "decimal(18,2)")]
         public decimal Rate { get; set; }

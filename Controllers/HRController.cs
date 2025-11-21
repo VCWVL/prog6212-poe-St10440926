@@ -18,9 +18,9 @@ namespace st10440926_poeparttwo.Controllers
             _db = db;
         }
 
-        // =====================
+        
         // HR DASHBOARD
-        // =====================
+       
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UserRole") != "HR")
@@ -30,16 +30,16 @@ namespace st10440926_poeparttwo.Controllers
             {
                 Users = _db.Users.ToList(),
                 Lecturers = LecturerStorage.LoadLecturers(),
-                Claims = _db.Claims.ToList(),   // ⭐ SQL instead of JSON
+                Claims = _db.Claims.ToList(),   
                 StandardRate = HourlyRateStorage.LoadRate()
             };
 
             return View(model);
         }
 
-        // =====================
+   
         // CREATE GENERAL USER
-        // =====================
+    
         [HttpGet]
         public IActionResult CreateUser()
         {
@@ -62,7 +62,7 @@ namespace st10440926_poeparttwo.Controllers
             _db.Users.Add(newUser);
             _db.SaveChanges();
 
-            // Lecturer still JSON for now
+            
             if (Role == "Lecturer")
             {
                 LecturerStorage.AddLecturer(new LecturerProfile
@@ -77,9 +77,9 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
-        // =====================
+       
         // EDIT USER
-        // =====================
+     
         [HttpGet]
         public IActionResult EditUser(string username)
         {
@@ -109,9 +109,9 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
-        // =====================
+       
         // DELETE USER
-        // =====================
+    
         public IActionResult DeleteUser(string username)
         {
             if (HttpContext.Session.GetString("Username") == username)
@@ -133,9 +133,8 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
-        // =====================
         // LECTURER MANAGEMENT
-        // =====================
+      
         public IActionResult CreateLecturer() => View();
 
         [HttpGet]
@@ -163,9 +162,9 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
-        // =====================
+       
         // DELETE LECTURER
-        // =====================
+       
         public IActionResult DeleteLecturer(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -183,9 +182,9 @@ namespace st10440926_poeparttwo.Controllers
             return RedirectToAction("Index");
         }
 
-        // =====================
-        // GENERATE APPROVED REPORT (SQL)
-        // =====================
+        
+        // GENERATE APPROVED REPORT 
+        
         public IActionResult GenerateApprovedReport(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -195,7 +194,6 @@ namespace st10440926_poeparttwo.Controllers
             if (lecturer == null)
                 return NotFound("Lecturer not found.");
 
-            // ⭐ SQL claims
             var approvedClaims = _db.Claims
                 .Where(c => c.LecturerUsername == username && c.Status == "Approved")
                 .ToList();
@@ -211,9 +209,9 @@ namespace st10440926_poeparttwo.Controllers
             return File(pdfBytes, "application/pdf", $"{username}_ApprovedReport.pdf");
         }
 
-        // =====================
-        // CLAIM VIEWS (SQL)
-        // =====================
+        
+        // CLAIM VIEWS 
+     
         public IActionResult PendingClaims()
         {
             var pendingClaims = _db.Claims

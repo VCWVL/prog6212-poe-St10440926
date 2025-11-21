@@ -30,9 +30,9 @@ namespace st10440926_poeparttwo.Services
             SaveUsers(users);
         }
 
-        // =====================================
+       
         // UPDATE USER (for username changes)
-        // =====================================
+        
         public static void UpdateUser(string oldUsername, string newUsername)
         {
             var list = LoadUsers();
@@ -45,9 +45,9 @@ namespace st10440926_poeparttwo.Services
             }
         }
 
-        // =====================================
+        
         // DELETE USER
-        // =====================================
+        
         public static void DeleteUser(string username)
         {
             var list = LoadUsers();

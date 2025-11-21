@@ -5,7 +5,7 @@ namespace st10440926_poeparttwo.Models
 {
     public class UserModel
     {
-        [Key]   // ⭐ Primary key
+        [Key]   
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Required]
         public string Username { get; set; }
@@ -14,6 +14,6 @@ namespace st10440926_poeparttwo.Models
         public string Password { get; set; }
 
         [Required]
-        public string Role { get; set; }   // HR, Lecturer, Coordinator, Manager
+        public string Role { get; set; }   
     }
 }

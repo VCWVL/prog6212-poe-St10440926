@@ -5,29 +5,29 @@
 
 <h3>Submit Lecturer Claim</h3>
 
-<!-- Validation summary (IMPORTANT) -->
+<!-- Validation summary  -->
 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
 <form asp-action="Create" enctype="multipart/form-data" method="post" class="mt-3">
 
-    <!-- ⭐ REQUIRED HIDDEN FIELD FOR LECTURER USERNAME -->
+    <!-- REQUIRED HIDDEN FIELD FOR LECTURER USERNAME -->
     <input type="hidden" asp-for="LecturerUsername" />
 
-    <!-- LECTURER NAME (READ-ONLY AUTO-FILLED) -->
+    <!-- LECTURER NAME  -->
     <div class="mb-3">
         <label asp-for="LecturerName" class="form-label"></label>
         <input asp-for="LecturerName" class="form-control" readonly />
         <span asp-validation-for="LecturerName" class="text-danger"></span>
     </div>
 
-    <!-- HOURS WORKED (EDITABLE) -->
+    <!-- HOURS WORKED  -->
     <div class="mb-3">
         <label asp-for="HoursWorked" class="form-label"></label>
         <input asp-for="HoursWorked" class="form-control" />
         <span asp-validation-for="HoursWorked" class="text-danger"></span>
     </div>
 
-    <!-- HOURLY RATE (READ-ONLY AUTO-FILLED) -->
+    <!-- HOURLY RATE  -->
     <div class="mb-3">
         <label asp-for="HourlyRate" class="form-label"></label>
         <input asp-for="HourlyRate" class="form-control" readonly />

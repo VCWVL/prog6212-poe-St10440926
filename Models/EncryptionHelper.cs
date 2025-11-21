@@ -40,7 +40,7 @@ namespace st10440926_poeparttwo.Models
             cryptoStream.CopyTo(outputFile);
         }
 
-        // Optional: encrypt all files in a folder
+        //  encrypt all files in a folder
         public static void EncryptAllInFolder(string sourceFolder, string destinationFolder)
         {
             Directory.CreateDirectory(destinationFolder);

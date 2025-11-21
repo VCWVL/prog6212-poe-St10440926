@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
-using st10440926_poeparttwo.Data;    // ⭐ SQL database
+using st10440926_poeparttwo.Data;   
 using System.Linq;
 
 namespace st10440926_poeparttwo.Controllers
@@ -14,15 +14,15 @@ namespace st10440926_poeparttwo.Controllers
             _db = db;
         }
 
-        // ============================
+        
         // LOGIN (GET)
-        // ============================
+        
         [HttpGet]
         public IActionResult Login() => View();
 
-        // ============================
+        
         // LOGIN (POST)
-        // ============================
+        
         [HttpPost]
         public IActionResult Login(UserModel user)
         {
@@ -35,13 +35,13 @@ namespace st10440926_poeparttwo.Controllers
                 return View();
             }
 
-            // ⭐ SQL: Look up user in database
+            
             var match = _db.Users.FirstOrDefault(u =>
                 u.Username == user.Username &&
                 u.Password == user.Password &&
                 u.Role == user.Role);
 
-            // If SQL user found → login successful
+            
             if (match != null)
             {
                 HttpContext.Session.SetString("Username", match.Username);
@@ -57,14 +57,14 @@ namespace st10440926_poeparttwo.Controllers
                 };
             }
 
-            // ❌ Login failed
+            //  Login failed
             ViewBag.Error = "Invalid login details.";
             return View();
         }
 
-        // ============================
+        
         // LOGOUT
-        // ============================
+        
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

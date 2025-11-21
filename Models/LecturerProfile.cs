@@ -5,9 +5,9 @@ namespace st10440926_poeparttwo.Models
 {
     public class LecturerProfile
     {
-        [Key]   // ⭐ PK
+        [Key]  
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
-        public string Username { get; set; }  // FK → Users
+        public string Username { get; set; }  
 
         [Required]
         public string FullName { get; set; }
@@ -19,7 +19,7 @@ namespace st10440926_poeparttwo.Models
         [Column(TypeName = "decimal(18,2)")]
         public decimal HourlyRate { get; set; }
 
-        // ⭐ Relationship to User Table
+        
         [ForeignKey("Username")]
         public UserModel User { get; set; }
     }

@@ -7,13 +7,13 @@ namespace st10440926_poeparttwo.Models
         // Standard hourly rate for all lecturers
         public decimal StandardRate { get; set; }
 
-        // All lecturer profiles (SQL table: LecturerProfiles)
+        // All lecturer profiles 
         public List<LecturerProfile> Lecturers { get; set; }
 
-        // All claims (SQL table: Claims)
+        // All claims 
         public List<ClaimModel> Claims { get; set; }
 
-        // All user accounts (SQL table: Users)
+        // All user accounts 
         public List<UserModel> Users { get; set; }
     }
 }

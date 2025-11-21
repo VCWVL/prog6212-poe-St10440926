@@ -5,16 +5,16 @@ using st10440926_poeparttwo.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ? REQUIRED BY QUESTPDF — FREE COMMUNITY LICENSE
+
 QuestPDF.Settings.License = LicenseType.Community;
 
-// MVC + Session
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
-// -----------------------------------------
-// DATABASE CONNECTION (EF CORE)
-// -----------------------------------------
+
+// DATABASE CONNECTION 
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("CMCSdb")));
 

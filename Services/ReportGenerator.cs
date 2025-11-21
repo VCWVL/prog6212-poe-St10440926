@@ -7,9 +7,9 @@ namespace st10440926_poeparttwo.Services
 {
     public static class ReportGenerator
     {
-        // ==========================================================
-        // ⭐ LECTURER REPORT (MULTIPLE APPROVED CLAIMS)
-        // ==========================================================
+        
+        //  LECTURER REPORT (MULTIPLE APPROVED CLAIMS)
+        
         public static byte[] GenerateLecturerReport(LecturerProfile lecturer, List<ClaimModel> claims)
         {
             QuestPDF.Settings.License = LicenseType.Community;
@@ -23,15 +23,15 @@ namespace st10440926_poeparttwo.Services
                 {
                     page.Margin(40);
 
-                    // ===========================
+                   
                     // HEADER
-                    // ===========================
+                    
                     page.Header().Text("Contract Monthly Claim Report")
                         .FontSize(24).Bold().AlignCenter();
 
-                    // ===========================
+                    
                     // CONTENT
-                    // ===========================
+                  
                     page.Content().Column(col =>
                     {
                         col.Item().Text($"Generated: {DateTime.Now:yyyy/MM/dd HH:mm:ss}")

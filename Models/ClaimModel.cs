@@ -5,7 +5,7 @@ namespace st10440926_poeparttwo.Models
 {
     public class ClaimModel
     {
-        [Key]   // ⭐ Primary Key for SQL
+        [Key]   
         [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
@@ -13,7 +13,7 @@ namespace st10440926_poeparttwo.Models
         public string LecturerName { get; set; }
 
         [Required]
-        public string LecturerUsername { get; set; }  // ⭐ Foreign Key to Users table
+        public string LecturerUsername { get; set; } 
 
         [Range(1, 200)]
         public double HoursWorked { get; set; }
