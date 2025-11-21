@@ -1,38 +1,32 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace st10440926_poeparttwo.Models
 {
     public class ClaimModel
     {
-        // Unique claim ID
+        [Key]   // ⭐ Primary Key for SQL
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public string Id { get; set; } = Guid.NewGuid().ToString();
 
-        // Name of the lecturer (auto-filled)
-        [Required, Display(Name = "Lecturer Name")]
+        [Required]
         public string LecturerName { get; set; }
 
-        // Used for filtering — WHO the claim belongs to
-        // ⭐ VERY IMPORTANT FOR SECURITY
-        public string LecturerUsername { get; set; }
+        [Required]
+        public string LecturerUsername { get; set; }  // ⭐ Foreign Key to Users table
 
-        // Hours worked
-        [Range(1, 200, ErrorMessage = "Enter valid hours (1–200).")]
+        [Range(1, 200)]
         public double HoursWorked { get; set; }
 
-        // Hourly rate (auto-filled)
-        [Range(100, 1000, ErrorMessage = "Enter hourly rate (100–1000).")]
+        [Range(100, 1000)]
         public double HourlyRate { get; set; }
 
-        // Date submitted
         public DateTime DateSubmitted { get; set; } = DateTime.Now;
 
-        // Optional notes
         public string? Notes { get; set; }
 
-        // Attached file name (original)
         public string? FileName { get; set; }
 
-        // Pending / Approved / Rejected
         public string Status { get; set; } = "Pending";
     }
 }

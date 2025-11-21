@@ -1,4 +1,7 @@
 using QuestPDF.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using st10440926_poeparttwo.Data;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,7 +12,16 @@ QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddControllersWithViews();
 builder.Services.AddSession();
 
+// -----------------------------------------
+// DATABASE CONNECTION (EF CORE)
+// -----------------------------------------
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("CMCSdb")));
+
 var app = builder.Build();
+
+
+
 
 app.UseStaticFiles();
 app.UseRouting();

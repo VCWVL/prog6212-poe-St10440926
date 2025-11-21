@@ -8,7 +8,7 @@
     "DateSubmitted": "2025-11-20T01:43:04.0309874+02:00",
     "Notes": "this is a trial",
     "FileName": null,
-    "Status": "Verified"
+    "Status": "Rejected"
   },
   {
     "Id": "55094b4c-6ce7-43ef-ab19-752f7eff61fd",
@@ -118,6 +118,28 @@
     "DateSubmitted": "2025-11-20T19:18:57.4144565+02:00",
     "Notes": null,
     "FileName": "city skyline.jpeg",
+    "Status": "Approved"
+  },
+  {
+    "Id": "9ea291f8-35c6-414d-a2bb-00a982dc8112",
+    "LecturerName": "row andrew ",
+    "LecturerUsername": "row",
+    "HoursWorked": 30,
+    "HourlyRate": 150,
+    "DateSubmitted": "2025-11-20T20:53:45.6849104+02:00",
+    "Notes": null,
+    "FileName": "dog picture.webp",
+    "Status": "Approved"
+  },
+  {
+    "Id": "8d7c7443-ea67-404f-a390-196f70e997cf",
+    "LecturerName": "Keona Mackan",
+    "LecturerUsername": "Keona_m",
+    "HoursWorked": 5,
+    "HourlyRate": 200,
+    "DateSubmitted": "2025-11-20T22:08:11.6824318+02:00",
+    "Notes": null,
+    "FileName": "CMCS_Project_Timeline_Gantt.pdf",
     "Status": "Approved"
   }
 ]

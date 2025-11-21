@@ -1,22 +1,37 @@
 [
   {
-    "Username": "pooven ",
-    "Password": "888",
+    "Username": "Dee",
+    "Password": "1234",
     "Role": "Manager"
   },
   {
-    "Username": "pooven ",
-    "Password": "88",
-    "Role": "Lecturer"
-  },
-  {
-    "Username": "vee",
+    "Username": "veni ",
     "Password": "123",
     "Role": "Lecturer"
   },
   {
-    "Username": "Dee",
-    "Password": "1234",
-    "Role": "Manager"
+    "Username": "row",
+    "Password": "777",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "Keona_m",
+    "Password": "k123",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "ruvs",
+    "Password": "123",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "nev",
+    "Password": "111",
+    "Role": "Lecturer"
+  },
+  {
+    "Username": "nari",
+    "Password": "123",
+    "Role": "Lecturer"
   }
 ]

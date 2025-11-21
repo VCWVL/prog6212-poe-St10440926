@@ -3,11 +3,21 @@ using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
 using st10440926_poeparttwo.Models;
 using st10440926_poeparttwo.Services;
+using st10440926_poeparttwo.Data;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace st10440926_poeparttwo.Controllers
 {
     public class HRController : Controller
     {
+        private readonly ApplicationDbContext _db;
+
+        public HRController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
         // =====================
         // HR DASHBOARD
         // =====================
@@ -18,45 +28,13 @@ namespace st10440926_poeparttwo.Controllers
 
             var model = new HRDashboardViewModel
             {
-                Users = UserStorage.LoadUsers(),
+                Users = _db.Users.ToList(),
                 Lecturers = LecturerStorage.LoadLecturers(),
-                Claims = ClaimStorage.LoadClaims(),
+                Claims = _db.Claims.ToList(),   // ⭐ SQL instead of JSON
                 StandardRate = HourlyRateStorage.LoadRate()
             };
 
             return View(model);
-        }
-
-        // =====================
-        // CREATE LECTURER
-        // =====================
-        [HttpGet]
-        public IActionResult CreateLecturer()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
-
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult CreateLecturer(string Username, string FullName, decimal HourlyRate, string Password)
-        {
-            UserStorage.AddUser(new UserModel
-            {
-                Username = Username,
-                Password = Password,
-                Role = "Lecturer"
-            });
-
-            LecturerStorage.AddLecturer(new LecturerProfile
-            {
-                Username = Username,
-                FullName = FullName,
-                HourlyRate = HourlyRate
-            });
-
-            return RedirectToAction("Index");
         }
 
         // =====================
@@ -74,13 +52,17 @@ namespace st10440926_poeparttwo.Controllers
         [HttpPost]
         public IActionResult CreateUser(string Username, string FullName, string Email, string Role, decimal? HourlyRate, string Password)
         {
-            UserStorage.AddUser(new UserModel
+            var newUser = new UserModel
             {
                 Username = Username,
                 Password = Password,
                 Role = Role
-            });
+            };
 
+            _db.Users.Add(newUser);
+            _db.SaveChanges();
+
+            // Lecturer still JSON for now
             if (Role == "Lecturer")
             {
                 LecturerStorage.AddLecturer(new LecturerProfile
@@ -96,44 +78,6 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // =====================
-        // EDIT LECTURER
-        // =====================
-        [HttpGet]
-        public IActionResult EditLecturer(string username)
-        {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
-
-            return View(LecturerStorage.GetLecturer(username));
-        }
-
-        [HttpPost]
-        public IActionResult EditLecturer(string OriginalUsername, string Username, string FullName, string Email, decimal HourlyRate)
-        {
-            LecturerStorage.UpdateLecturer(OriginalUsername, new LecturerProfile
-            {
-                Username = Username,
-                FullName = FullName,
-                Email = Email,
-                HourlyRate = HourlyRate
-            });
-
-            UserStorage.UpdateUser(OriginalUsername, Username);
-
-            return RedirectToAction("Index");
-        }
-
-        // =====================
-        // DELETE LECTURER
-        // =====================
-        public IActionResult DeleteLecturer(string username)
-        {
-            LecturerStorage.DeleteLecturer(username);
-            UserStorage.DeleteUser(username);
-            return RedirectToAction("Index");
-        }
-
-        // =====================
         // EDIT USER
         // =====================
         [HttpGet]
@@ -142,24 +86,24 @@ namespace st10440926_poeparttwo.Controllers
             if (HttpContext.Session.GetString("UserRole") != "HR")
                 return RedirectToAction("Login", "Role");
 
-            return View(UserStorage.LoadUsers().FirstOrDefault(u => u.Username == username));
+            var user = _db.Users.FirstOrDefault(u => u.Username == username);
+            return View(user);
         }
 
         [HttpPost]
         public IActionResult EditUser(string OriginalUsername, string Username, string Role, string Password)
         {
-            var users = UserStorage.LoadUsers();
-            var existing = users.FirstOrDefault(u => u.Username == OriginalUsername);
+            var user = _db.Users.FirstOrDefault(u => u.Username == OriginalUsername);
 
-            if (existing != null)
+            if (user != null)
             {
-                existing.Username = Username;
-                existing.Role = Role;
+                user.Username = Username;
+                user.Role = Role;
 
                 if (!string.IsNullOrWhiteSpace(Password))
-                    existing.Password = Password;
+                    user.Password = Password;
 
-                UserStorage.SaveUsers(users);
+                _db.SaveChanges();
             }
 
             return RedirectToAction("Index");
@@ -176,111 +120,128 @@ namespace st10440926_poeparttwo.Controllers
                 return RedirectToAction("Index");
             }
 
-            UserStorage.DeleteUser(username);
+            var user = _db.Users.FirstOrDefault(u => u.Username == username);
+
+            if (user != null)
+            {
+                _db.Users.Remove(user);
+                _db.SaveChanges();
+            }
+
             LecturerStorage.DeleteLecturer(username);
 
             return RedirectToAction("Index");
         }
 
         // =====================
-        // SET STANDARD HOURLY RATE
+        // LECTURER MANAGEMENT
         // =====================
-        [HttpGet]
-        public IActionResult SetRate()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
+        public IActionResult CreateLecturer() => View();
 
-            return View();
+        [HttpGet]
+        public IActionResult EditLecturer(string username)
+        {
+            var lecturer = LecturerStorage.GetLecturer(username);
+            return View(lecturer);
         }
 
         [HttpPost]
-        public IActionResult SetRate(decimal rate)
+        public IActionResult EditLecturer(string OriginalUsername, string Username, string FullName, string Email, decimal HourlyRate)
         {
-            HourlyRateStorage.SaveRate(rate);
+            var lecturer = LecturerStorage.GetLecturer(OriginalUsername);
+
+            if (lecturer == null)
+                return NotFound();
+
+            lecturer.Username = Username;
+            lecturer.FullName = FullName;
+            lecturer.Email = Email;
+            lecturer.HourlyRate = HourlyRate;
+
+            LecturerStorage.UpdateLecturer(OriginalUsername, lecturer);
+
             return RedirectToAction("Index");
         }
 
         // =====================
-        // HR: PENDING CLAIMS
+        // DELETE LECTURER
         // =====================
-        public IActionResult PendingClaims()
+        public IActionResult DeleteLecturer(string username)
         {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
+            if (string.IsNullOrWhiteSpace(username))
+                return NotFound();
 
-            var claims = ClaimStorage.LoadClaims()
-                .Where(c => c.Status == "Pending")
-                .ToList();
+            LecturerStorage.DeleteLecturer(username);
 
-            return View(claims);
+            var user = _db.Users.FirstOrDefault(u => u.Username == username);
+            if (user != null)
+            {
+                _db.Users.Remove(user);
+                _db.SaveChanges();
+            }
+
+            return RedirectToAction("Index");
         }
 
         // =====================
-        // HR: VERIFIED CLAIMS
+        // GENERATE APPROVED REPORT (SQL)
         // =====================
-        public IActionResult VerifiedClaims()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
-
-            var claims = ClaimStorage.LoadClaims()
-                .Where(c => c.Status == "Verified")
-                .ToList();
-
-            return View(claims);
-        }
-
-        // =====================
-        // HR: APPROVED CLAIMS
-        // =====================
-        public IActionResult ApprovedClaims()
-        {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
-
-            var claims = ClaimStorage.LoadClaims()
-                .Where(c => c.Status == "Approved")
-                .ToList();
-
-            return View(claims);
-        }
-
-        // ==========================================================
-        // ⭐ GENERATE REPORT FOR APPROVED CLAIMS OF A LECTURER
-        // ==========================================================
         public IActionResult GenerateApprovedReport(string username)
         {
-            QuestPDF.Settings.License = LicenseType.Community;
+            if (string.IsNullOrWhiteSpace(username))
+                return NotFound();
 
             var lecturer = LecturerStorage.GetLecturer(username);
             if (lecturer == null)
                 return NotFound("Lecturer not found.");
 
-            var approvedClaims = ClaimStorage.LoadClaims()
-                .Where(c => c.LecturerUsername == lecturer.Username && c.Status == "Approved")
+            // ⭐ SQL claims
+            var approvedClaims = _db.Claims
+                .Where(c => c.LecturerUsername == username && c.Status == "Approved")
                 .ToList();
 
             if (!approvedClaims.Any())
-                return NotFound("No approved claims found for this lecturer.");
+            {
+                TempData["Error"] = "No approved claims available for this lecturer.";
+                return RedirectToAction("ApprovedClaims");
+            }
 
-            var pdf = ReportGenerator.GenerateLecturerReport(lecturer, approvedClaims);
+            var pdfBytes = ReportGenerator.GenerateLecturerReport(lecturer, approvedClaims);
 
-            string fileName = $"ApprovedClaims_{lecturer.FullName.Replace(" ", "_")}_{DateTime.Now:yyyy-MM-dd}.pdf";
-
-            return File(pdf, "application/pdf", fileName);
+            return File(pdfBytes, "application/pdf", $"{username}_ApprovedReport.pdf");
         }
 
         // =====================
-        // ⭐ MANAGE ALL USERS
+        // CLAIM VIEWS (SQL)
         // =====================
-        public IActionResult ManageUsers()
+        public IActionResult PendingClaims()
         {
-            if (HttpContext.Session.GetString("UserRole") != "HR")
-                return RedirectToAction("Login", "Role");
+            var pendingClaims = _db.Claims
+                .Where(c => c.Status == "Pending")
+                .ToList();
 
-            var users = UserStorage.LoadUsers();
-            return View(users);
+            return View(pendingClaims);
         }
+
+        public IActionResult VerifiedClaims()
+        {
+            var verifiedClaims = _db.Claims
+                .Where(c => c.Status == "Verified")
+                .ToList();
+
+            return View(verifiedClaims);
+        }
+
+        public IActionResult ApprovedClaims()
+        {
+            var approvedClaims = _db.Claims
+                .Where(c => c.Status == "Approved")
+                .ToList();
+
+            return View(approvedClaims);
+        }
+
+        public IActionResult ManageUsers() =>
+            View(_db.Users.ToList());
     }
 }

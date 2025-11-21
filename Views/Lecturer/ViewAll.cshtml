@@ -45,10 +45,26 @@ else
                     <td>@(claim.HoursWorked* claim.HourlyRate)</td>
                     <td>@claim.Notes</td>
 
+                    <!-- ⭐ FILE VIEW + DOWNLOAD USING FILECONTROLLER -->
                     <td>
                         @if (!string.IsNullOrEmpty(claim.FileName))
                         {
-                            <span class="text-muted">@claim.FileName</span>
+                            <!-- VIEW FILE -->
+                            <a asp-controller="File"
+                               asp-action="ViewFile"
+                               asp-route-fileName="@claim.FileName"
+                               target="_blank"
+                               class="text-primary text-decoration-underline">
+                                @claim.FileName
+                            </a>
+
+                            <!-- DOWNLOAD FILE -->
+                            <a asp-controller="File"
+                               asp-action="DownloadFile"
+                               asp-route-fileName="@claim.FileName"
+                               class="btn btn-sm btn-outline-secondary ms-2">
+                                Download
+                            </a>
                         }
                         else
                         {
@@ -56,6 +72,7 @@ else
                         }
                     </td>
 
+                    <!-- STATUS -->
                     <td>
                         @if (claim.Status == "Approved")
                         {

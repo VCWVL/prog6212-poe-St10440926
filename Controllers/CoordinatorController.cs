@@ -1,52 +1,59 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
-using System.Text.Json;
+using st10440926_poeparttwo.Data;   // ⭐ ADDED
+using System.Linq;
 
 namespace st10440926_poeparttwo.Controllers
 {
     public class CoordinatorController : Controller
     {
-        private readonly string _jsonPath = Path.Combine("App_Data", "claims.json");
+        private readonly ApplicationDbContext _db;   // ⭐ ADDED
 
+        public CoordinatorController(ApplicationDbContext db)  // ⭐ ADDED
+        {
+            _db = db;
+        }
+
+        // =============================
+        // VIEW PENDING CLAIMS
+        // =============================
         public IActionResult Index()
         {
-            var claims = LoadClaims().Where(c => c.Status == "Pending").ToList();
+            var claims = _db.Claims
+                .Where(c => c.Status == "Pending")
+                .ToList();                           // ⭐ SQL REPLACEMENT
+
             return View(claims);
         }
 
+        // =============================
+        // VERIFY CLAIM
+        // =============================
         public IActionResult Verify(string id)
         {
-            var claims = LoadClaims();
-            var claim = claims.FirstOrDefault(c => c.Id == id);
+            var claim = _db.Claims.FirstOrDefault(c => c.Id == id);  // ⭐ SQL
             if (claim != null)
+            {
                 claim.Status = "Verified";
-            SaveClaims(claims);
+                _db.SaveChanges();                                   // ⭐ SQL SAVE
+            }
+
             return RedirectToAction("Index");
         }
 
+        // =============================
+        // REJECT CLAIM
+        // =============================
         public IActionResult Reject(string id)
         {
-            var claims = LoadClaims();
-            var claim = claims.FirstOrDefault(c => c.Id == id);
+            var claim = _db.Claims.FirstOrDefault(c => c.Id == id);  // ⭐ SQL
             if (claim != null)
+            {
                 claim.Status = "Rejected";
-            SaveClaims(claims);
+                _db.SaveChanges();                                   // ⭐ SQL SAVE
+            }
+
             return RedirectToAction("Index");
-        }
-
-        private List<ClaimModel> LoadClaims()
-        {
-            if (!System.IO.File.Exists(_jsonPath))
-                return new List<ClaimModel>();
-
-            string json = System.IO.File.ReadAllText(_jsonPath);
-            return JsonSerializer.Deserialize<List<ClaimModel>>(json) ?? new List<ClaimModel>();
-        }
-
-        private void SaveClaims(List<ClaimModel> claims)
-        {
-            string json = JsonSerializer.Serialize(claims, new JsonSerializerOptions { WriteIndented = true });
-            System.IO.File.WriteAllText(_jsonPath, json);
         }
     }
 }

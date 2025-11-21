@@ -1,22 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
-using st10440926_poeparttwo.Services;
+using st10440926_poeparttwo.Data;    // ⭐ SQL database
+using System.Linq;
 
 namespace st10440926_poeparttwo.Controllers
 {
     public class RoleController : Controller
     {
-        private readonly Dictionary<string, string> _roles = new()
-        {
-            { "Lecturer", "lect123" },
-            { "Coordinator", "coord123" },
-            { "Manager", "admin123" },
-            { "HR", "hr123" }
-        };
+        private readonly ApplicationDbContext _db;
 
+        public RoleController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
+
+        // ============================
+        // LOGIN (GET)
+        // ============================
         [HttpGet]
         public IActionResult Login() => View();
 
+        // ============================
+        // LOGIN (POST)
+        // ============================
         [HttpPost]
         public IActionResult Login(UserModel user)
         {
@@ -29,32 +35,13 @@ namespace st10440926_poeparttwo.Controllers
                 return View();
             }
 
-            // ---------------------------------------
-            // 🔐 HR LOGIN (Hard-coded)
-            // ---------------------------------------
-            if (user.Role == "HR")
-            {
-                if (user.Username == "hr" && user.Password == "hr123")
-                {
-                    HttpContext.Session.SetString("Username", user.Username);
-                    HttpContext.Session.SetString("UserRole", user.Role);
-                    return RedirectToAction("Index", "HR");
-                }
-
-                ViewBag.Error = "Invalid HR login details.";
-                return View();
-            }
-
-            // ---------------------------------------
-            // 📌 LECTURER LOGIN (from UserStorage.json)
-            // ---------------------------------------
-            var users = UserStorage.LoadUsers();
-
-            var match = users.FirstOrDefault(u =>
+            // ⭐ SQL: Look up user in database
+            var match = _db.Users.FirstOrDefault(u =>
                 u.Username == user.Username &&
                 u.Password == user.Password &&
                 u.Role == user.Role);
 
+            // If SQL user found → login successful
             if (match != null)
             {
                 HttpContext.Session.SetString("Username", match.Username);
@@ -65,34 +52,19 @@ namespace st10440926_poeparttwo.Controllers
                     "Lecturer" => RedirectToAction("Index", "Lecturer"),
                     "Coordinator" => RedirectToAction("Index", "Coordinator"),
                     "Manager" => RedirectToAction("Index", "Manager"),
+                    "HR" => RedirectToAction("Index", "HR"),
                     _ => RedirectToAction("Login")
                 };
             }
 
-            // ---------------------------------------
-            // 📌 COORDINATOR + MANAGER from dictionary
-            // ---------------------------------------
-            if (_roles.TryGetValue(user.Role, out string correctPassword)
-                && user.Password == correctPassword)
-            {
-                HttpContext.Session.SetString("Username", user.Username);
-                HttpContext.Session.SetString("UserRole", user.Role);
-
-                return user.Role switch
-                {
-                    "Coordinator" => RedirectToAction("Index", "Coordinator"),
-                    "Manager" => RedirectToAction("Index", "Manager"),
-                    _ => RedirectToAction("Login")
-                };
-            }
-
-            // ---------------------------------------
-            // ❌ If login fails
-            // ---------------------------------------
+            // ❌ Login failed
             ViewBag.Error = "Invalid login details.";
             return View();
         }
 
+        // ============================
+        // LOGOUT
+        // ============================
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

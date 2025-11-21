@@ -1,0 +1,23 @@
+﻿@model List<st10440926_poeparttwo.Models.UserModel>
+
+<h2>All Users in Database</h2>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Password</th>
+            <th>Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model)
+        {
+            <tr>
+                <td>@u.Username</td>
+                <td>@u.Password</td>
+                <td>@u.Role</td>
+            </tr>
+        }
+    </tbody>
+</table>

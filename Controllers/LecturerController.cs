@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using st10440926_poeparttwo.Models;
-using st10440926_poeparttwo.Services;   // ⭐ REQUIRED to access LecturerStorage
-using System.Text.Json;
+using st10440926_poeparttwo.Services;
+using st10440926_poeparttwo.Data;      // ⭐ Added
 using System.Security.Cryptography;
 using System.Text;
 
@@ -9,9 +9,14 @@ namespace st10440926_poeparttwo.Controllers
 {
     public class LecturerController : Controller
     {
-        private readonly string _jsonPath = Path.Combine("App_Data", "claims.json");
+        private readonly ApplicationDbContext _db;  // ⭐ SQL Database
         private readonly string _uploadRoot = "upload";
         private readonly string _key = "POE2025_SECURE_KEY";
+
+        public LecturerController(ApplicationDbContext db)
+        {
+            _db = db;
+        }
 
         // ------------------------------------------------------
         // LECTURER DASHBOARD — SHOW ONLY MY (NOT APPROVED) CLAIMS
@@ -23,10 +28,8 @@ namespace st10440926_poeparttwo.Controllers
             if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login", "Role");
 
-            var claims = LoadClaims();
-
-            // ⭐ FILTER: Only logged-in lecturer + not approved
-            var myClaims = claims
+            // ⭐ SQL QUERY
+            var myClaims = _db.Claims
                 .Where(c => c.LecturerUsername == username && c.Status != "Approved")
                 .ToList();
 
@@ -56,7 +59,7 @@ namespace st10440926_poeparttwo.Controllers
             {
                 LecturerName = profile.FullName,
                 HourlyRate = (double)profile.HourlyRate,
-                LecturerUsername = username  // ⭐ REQUIRED FIX
+                LecturerUsername = username
             };
 
             return View(model);
@@ -71,10 +74,9 @@ namespace st10440926_poeparttwo.Controllers
             if (!ModelState.IsValid)
                 return View(model);
 
-            // ⭐ Store logged-in lecturer on the claim
             model.LecturerUsername = HttpContext.Session.GetString("Username");
 
-            // Handle file upload & encryption
+            // ⭐ File Upload + Encryption (unchanged)
             if (file != null)
             {
                 Directory.CreateDirectory(Path.Combine(_uploadRoot, "original"));
@@ -95,10 +97,9 @@ namespace st10440926_poeparttwo.Controllers
                 model.FileName = file.FileName;
             }
 
-            // Save claim
-            var claims = LoadClaims();
-            claims.Add(model);
-            SaveClaims(claims);
+            // ⭐ SQL SAVE INSTEAD OF JSON
+            _db.Claims.Add(model);
+            _db.SaveChanges();
 
             TempData["Message"] = "Claim submitted successfully!";
             return RedirectToAction("ViewAll");
@@ -114,10 +115,8 @@ namespace st10440926_poeparttwo.Controllers
             if (string.IsNullOrEmpty(username))
                 return RedirectToAction("Login", "Role");
 
-            var claims = LoadClaims();
-
-            // ⭐ FILTER: Only logged-in lecturer’s claims
-            var myClaims = claims
+            // ⭐ SQL QUERY
+            var myClaims = _db.Claims
                 .Where(c => c.LecturerUsername == username)
                 .ToList();
 
@@ -125,7 +124,7 @@ namespace st10440926_poeparttwo.Controllers
         }
 
         // ------------------------------------------------------
-        // ENCRYPTION
+        // ENCRYPTION (UNCHANGED)
         // ------------------------------------------------------
         private byte[] EncryptFile(byte[] data, string key)
         {
@@ -137,27 +136,6 @@ namespace st10440926_poeparttwo.Controllers
             byte[] encrypted = encryptor.TransformFinalBlock(data, 0, data.Length);
 
             return aes.IV.Concat(encrypted).ToArray();
-        }
-
-        // ------------------------------------------------------
-        // JSON LOAD / SAVE
-        // ------------------------------------------------------
-        private List<ClaimModel> LoadClaims()
-        {
-            if (!Directory.Exists("App_Data"))
-                Directory.CreateDirectory("App_Data");
-
-            if (!System.IO.File.Exists(_jsonPath))
-                return new List<ClaimModel>();
-
-            string json = System.IO.File.ReadAllText(_jsonPath);
-            return JsonSerializer.Deserialize<List<ClaimModel>>(json) ?? new List<ClaimModel>();
-        }
-
-        private void SaveClaims(List<ClaimModel> claims)
-        {
-            string json = JsonSerializer.Serialize(claims, new JsonSerializerOptions { WriteIndented = true });
-            System.IO.File.WriteAllText(_jsonPath, json);
         }
     }
 }

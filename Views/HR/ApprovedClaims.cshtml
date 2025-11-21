@@ -5,26 +5,42 @@
 <table class="table table-bordered table-striped">
     <thead class="table-dark">
         <tr>
-            <th>ID</th>
             <th>Lecturer</th>
-            <th>Hours</th>
-            <th>Rate (R)</th>
-            <th>Total (R)</th>
-            <th>Date Submitted</th>
-            <th>Status</th>
+            <th>Total Approved Claims</th>
+            <th>Total Hours</th>
+            <th>Total Amount (R)</th>
+            <th>Report</th>
         </tr>
     </thead>
+
     <tbody>
-        @foreach (var claim in Model)
+        @foreach (var group in Model.GroupBy(c => c.LecturerUsername))
         {
+            var lecturer = group.Key;
+            var totalHours = group.Sum(c => c.HoursWorked);
+            var totalAmount = group.Sum(c => c.HoursWorked * c.HourlyRate);
+            var claimCount = group.Count();
+
             <tr>
-                <td>@claim.Id</td>
-                <td>@claim.LecturerUsername</td>
-                <td>@claim.HoursWorked</td>
-                <td>@claim.HourlyRate</td>
-                <td>@(claim.HoursWorked* claim.HourlyRate)</td>
-                <td>@claim.DateSubmitted.ToString("yyyy-MM-dd")</td>
-                <td><span class="badge bg-success">Approved</span></td>
+                <td>@lecturer</td>
+                <td>@claimCount</td>
+                <td>@totalHours</td>
+                <td>@totalAmount</td>
+
+                <td>
+                    @if (claimCount > 0)
+                    {
+                        <a asp-action="GenerateApprovedReport"
+                           asp-route-username="@lecturer"
+                           class="btn btn-sm btn-success">
+                            View Report
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">No Report Available</span>
+                    }
+                </td>
             </tr>
         }
     </tbody>

@@ -1,20 +1,9 @@
 [
   {
-    "Username": "pooven ",
-    "FullName": "pooven andrew ",
-    "Email": "poovenandrew@gmail.com",
-    "HourlyRate": 55
-  },
-  {
-    "Username": "vee",
-    "FullName": "vee",
-    "Email": "vee@gmail.com",
-    "HourlyRate": 12
-  },
-  {
-    "Username": "Dee",
-    "FullName": "dion ",
-    "Email": "Dion@gmail.com",
-    "HourlyRate": 350
+    "Username": "esay",
+    "FullName": "Esayvani",
+    "Email": "es@gmail.com",
+    "HourlyRate": 250,
+    "User": null
   }
 ]

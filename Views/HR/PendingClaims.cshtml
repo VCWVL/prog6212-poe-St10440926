@@ -12,7 +12,6 @@
             <th>Total</th>
             <th>Date</th>
             <th>Notes</th>
-            <th>Actions</th>
         </tr>
     </thead>
 
@@ -26,14 +25,6 @@
                 <td>@(claim.HoursWorked* claim.HourlyRate)</td>
                 <td>@claim.DateSubmitted.ToString("yyyy-MM-dd")</td>
                 <td>@claim.Notes</td>
-
-                <td>
-                    <a asp-controller="Coordinator" asp-action="VerifyClaim"
-                       asp-route-id="@claim.Id"
-                       class="btn btn-sm btn-info">
-                        Verify
-                    </a>
-                </td>
             </tr>
         }
     </tbody>

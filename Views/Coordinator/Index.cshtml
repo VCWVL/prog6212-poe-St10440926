@@ -1,4 +1,5 @@
 ﻿@model List<st10440926_poeparttwo.Models.ClaimModel>
+
 @{
     ViewData["Title"] = "Coordinator Dashboard";
 }
@@ -24,6 +25,7 @@
             <th>Actions</th>
         </tr>
     </thead>
+
     <tbody>
         @foreach (var claim in Model)
         {
@@ -31,16 +33,49 @@
                 <td>@claim.LecturerName</td>
                 <td>@claim.HoursWorked</td>
                 <td>@claim.HourlyRate</td>
-                <td>@(claim.HoursWorked * claim.HourlyRate)</td>
+                <td>@(claim.HoursWorked* claim.HourlyRate)</td>
                 <td>@claim.Notes</td>
-                <td>@claim.FileName</td>
+
+                <!-- ⭐ VIEW + DOWNLOAD using FileController -->
                 <td>
-                    <a asp-action="Verify" asp-route-id="@claim.Id" class="btn btn-success btn-sm">Verify</a>
-                    <a asp-action="Reject" asp-route-id="@claim.Id" class="btn btn-danger btn-sm">Reject</a>
-                    <a asp-controller="Claims" asp-action="DownloadFile" asp-route-fileName="@claim.FileName" class="btn btn-primary btn-sm">
-                        Download
+                    @if (!string.IsNullOrEmpty(claim.FileName))
+                    {
+                        <!-- View File -->
+                        <a asp-controller="File"
+                           asp-action="ViewFile"
+                           asp-route-fileName="@claim.FileName"
+                           target="_blank"
+                           class="text-primary text-decoration-underline">
+                            @claim.FileName
+                        </a>
+
+                        <!-- Download File -->
+                        <a asp-controller="File"
+                           asp-action="DownloadFile"
+                           asp-route-fileName="@claim.FileName"
+                           class="btn btn-sm btn-outline-secondary ms-2">
+                            Download
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="text-danger">No File</span>
+                    }
+                </td>
+
+                <!-- ACTIONS -->
+                <td>
+                    <a asp-action="Verify"
+                       asp-route-id="@claim.Id"
+                       class="btn btn-success btn-sm">
+                        Verify
                     </a>
 
+                    <a asp-action="Reject"
+                       asp-route-id="@claim.Id"
+                       class="btn btn-danger btn-sm">
+                        Reject
+                    </a>
                 </td>
             </tr>
         }
